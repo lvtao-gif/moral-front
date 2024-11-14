@@ -1,258 +1,412 @@
 <template>
-    <el-container class="layout-container">
-      <!-- Sidebar menu -->
-      <el-aside width="240px" class="sidebar">
-        <div class="logo">
-          <span class="logo-text">VCIS大模型生成内容检测平台</span>
+  <div class="task-management">
+    <!-- 页面标题区域 -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1>任务管理中心</h1>
+          <div class="title-decoration">
+            <div class="line"></div>
+            <div class="dot"></div>
+            <div class="line"></div>
+          </div>
         </div>
-        <el-menu
-          :default-active="activeMenu"
-          background-color="#1e1e2d"
-          text-color="#a2a3b7"
-          active-text-color="#ffffff"
-          @select="handleSelect"
-        >
-        <el-menu-item index="llm">
-            <i class="el-icon-setting"></i>
-            <el-icon><MessageBox /></el-icon>
-            <span>大模型配置</span>
-          </el-menu-item>
-          <el-menu-item index="dateset">
-            <i class="el-icon-document"></i>
-            <el-icon><Edit /></el-icon>
-            <span>数据集选择</span>
-          </el-menu-item>
-         <!-- <el-menu-item index="keyword">
-            <i class="el-icon-document"></i>
-            <span>关键词库</span>
-          </el-menu-item>-->
-          <el-menu-item index="task">
-            <i class="el-icon-plus"></i>
-            <el-icon><Notification /></el-icon>
-            <span>发布任务</span>
-          </el-menu-item>
-          <el-menu-item index="taskmanger">
-            <i class="el-icon-s-order"></i>
-            <el-icon><Compass /></el-icon>
-            <span>任务管理</span>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
-  
-      <!-- Main content area -->
-      <el-container>
-        <el-header class="header">
-          <h2 class="page-title">{{ currentPageTitle }}</h2>
-          <div class="user-info">
-            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-            <span class="username">用户名</span>
-          </div>
-        </el-header>
-        <el-main>
-          <div class="steps-container">
-            <el-steps
-              style="width: 500px;"
-              :space="200"
-              :active="3"
-              finish-status="success"
-            >
-            <el-step title="大模型配置" />
-            <el-step title="数据集选择" />
-            <el-step title="发布任务" />
-            <el-step title="任务管理" />
-            </el-steps>
-          </div>
-          <div class="mb-4">
-            <div class="query-button">
-              <el-button type="primary" @click="inquire">刷新</el-button>
-            </div>
-            <el-table :data="taskData" border style="width: 100%">
-              <el-table-column prop="taskId" label="任务ID" width="180" />
-              <el-table-column prop="taskName" label="任务名称" width="180" />
-              <el-table-column prop="datasetName" label="数据集名称" width="180" />
-              <!-- <el-table-column prop="keywordName" label="关键词库" width="180" />-->
-              <el-table-column prop="modelName" label="模型名称" width="180" />
-              <el-table-column prop="taskStatus" label="任务状态" width="180" />
-              <el-table-column prop="creationTime" label="创建时间" width="180" />
-              <el-table-column prop="download" label="下载链接" />
-            </el-table> 
-          </div>
-        </el-main>
-      </el-container>
-    </el-container>
-  </template>
-  
-<script lang="ts">
-import { defineComponent, ref, shallowRef, computed , onMounted} from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios';
+        <div class="header-actions">
+          <el-button 
+            type="primary" 
+            class="refresh-button" 
+            @click="inquire"
+            :icon="Refresh"
+          >
+            刷新数据
+          </el-button>
+        </div>
+      </div>
+    </div>
 
+    <!-- 数据统计卡片 -->
+    <div class="statistics-cards">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <el-icon><DataLine /></el-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ taskData.length }}</div>
+          <div class="stat-label">总任务数</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <el-icon><Loading /></el-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ runningTasks }}</div>
+          <div class="stat-label">进行中</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <el-icon><Select /></el-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ completedTasks }}</div>
+          <div class="stat-label">已完成</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 任务列表 -->
+    <div class="task-table-container">
+      <div class="table-header">
+        <h2>任务列表</h2>
+        <div class="header-line"></div>
+      </div>
+      <el-table 
+        :data="taskData" 
+        border 
+        style="width: 100%"
+        class="custom-table"
+        :header-cell-style="{ background: '#f8fafc', color: '#1a1a1a', fontWeight: '600' }"
+      >
+        <el-table-column prop="taskId" label="任务ID" min-width="120">
+          <template #default="scope">
+            <div class="task-id">{{ scope.row.taskId }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="taskName" label="任务名称" min-width="150">
+          <template #default="scope">
+            <div class="task-name">{{ scope.row.taskName }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="datasetName" label="数据集名称" min-width="150" />
+        <el-table-column prop="modelName" label="模型名称" min-width="150" />
+        <el-table-column prop="taskStatus" label="任务状态" min-width="120">
+          <template #default="scope">
+            <el-tag 
+              :type="getStatusType(scope.row.taskStatus)"
+              effect="light"
+              class="status-tag"
+            >
+              {{ getStatusText(scope.row.taskStatus) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="creationTime" label="创建时间" min-width="180">
+          <template #default="scope">
+            <div class="time-cell">
+              <el-icon><Timer /></el-icon>
+              {{ formatTime(scope.row.creationTime) }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="download" label="操作" min-width="120" fixed="right">
+          <template #default="scope">
+            <el-button 
+              v-if="scope.row.taskStatus === 1"
+              type="primary" 
+              link
+              :icon="Download"
+              @click="handleDownload(scope.row)"
+            >
+              下载结果
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref, computed, onMounted } from 'vue';
+import axios from 'axios';
+import { 
+  Refresh, 
+  DataLine, 
+  Loading, 
+  Select, 
+  Timer,
+  Download 
+} from '@element-plus/icons-vue';
 
 export default defineComponent({
-  name: 'TestLayout',
+  name: 'TaskManagement',
+  components: {
+    Refresh,
+    DataLine,
+    Loading,
+    Select,
+    Timer,
+    Download
+  },
   setup() {
-    const router = useRouter()
-    const currentComponent = shallowRef(null)
-    const activeMenu = ref('')
-    const taskData = ref([])
-    const userJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTI4OTE4NzF9.6OFjQ62TRDJbW4fdGvuhm3lKazws_iUUGrVKInPDMt8' // 请替换为实际的 JWT token
+    const taskData = ref([]);
+    const userJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTI4OTE4NzF9.6OFjQ62TRDJbW4fdGvuhm3lKazws_iUUGrVKInPDMt8';
 
-    const currentPageTitle = computed(() => {
-      switch (activeMenu.value) {
-        case 'llm': return '大模型配置'
-        case 'dateset': return '数据集选择'
-        case 'task': return '发布任务'
-        case 'taskmanger': return '任务管理'
-        default: return '任务管理'
-      }
-    })
+    // 计算统计数据
+    const runningTasks = computed(() => {
+      return taskData.value.filter(task => task.taskStatus === 2).length;
+    });
 
-    const handleSelect = async (key: string) => {
-      activeMenu.value = key
-      
-      try {
-        let componentPath = '';
-        switch(key) {
-          case 'llm':
-            componentPath = '/src/components/Thirdpartyevaluation/llm.vue';
-            break;
-          case 'dateset':
-            componentPath = '/src/components/Thirdpartyevaluation/dateset.vue';
-            break;
-          case 'task':
-            componentPath = '/src/components/Thirdpartyevaluation/Task.vue';
-            break;
-          case 'taskmanger':
-            componentPath = '/src/components/Thirdpartyevaluation/Taskmanger.vue';
-            break;
-          default:
-            currentComponent.value = null;
-            router.push('/');
-            return;
-        }
-        
-        // 使用动态导入来加载组件
-        const module = await import(/* @vite-ignore */ componentPath);
-        currentComponent.value = module.default;
-        
-        // 确保路由更新
-        await router.push(`/${key}`);
-      } catch (error) {
-        console.error(`Failed to load component: ${key}`, error);
-        currentComponent.value = null;
-        router.push('/');
+    const completedTasks = computed(() => {
+      return taskData.value.filter(task => task.taskStatus === 1).length;
+    });
+
+    const getStatusType = (status: number) => {
+      switch (status) {
+        case 1: return 'warning';
+        case 2: return 'success';
+        default: return 'info';
       }
-    }
+    };
+
+    const getStatusText = (status: number) => {
+      switch (status) {
+        case 2: return '进行中';
+        case 1: return '已完成';
+        default: return '未知状态';
+      }
+    };
+
+    const formatTime = (time: string) => {
+      const date = new Date(time);
+      return date.toLocaleString();
+    };
+
+    const handleDownload = (row: any) => {
+      if (row.download && typeof row.download === 'string') {
+        window.open(row.download, '_blank');
+      }
+    };
+
     const inquire = async () => {
       try {
         const response = await axios.get('http://10.110.147.246:5004/evaluation/task/query', {
-          params: {
-            userJwt: userJwt
-          }
+          params: { userJwt }
         });
         if (response.data.code === 0) {
           taskData.value = response.data.data;
-        } else {
-          console.error('查询失败:', response.data.message);
         }
       } catch (error) {
-        console.error('请求失败:', error);
+        console.error('查询失败:', error);
       }
     };
-        // 添加自动查询函数
-        const autoInquire = () => {
-      inquire();
-    };
 
-    // 使用 onMounted 钩子在组件挂载后自动执行查询
     onMounted(() => {
-      autoInquire();
+      inquire();
     });
 
     return {
-      currentComponent,
-      activeMenu,
-      handleSelect,
-      currentPageTitle,
+      taskData,
+      runningTasks,
+      completedTasks,
       inquire,
-      taskData 
-    }
+      getStatusType,
+      getStatusText,
+      formatTime,
+      handleDownload,
+      Refresh,
+      DataLine,
+      Loading,
+      Select,
+      Timer,
+      Download
+    };
   }
-})
-  </script>
-  
-  <style scoped>
-  .layout-container {
-    height: 100vh;
-  }
-  
-  .sidebar {
-    background-color: #1e1e2d;
-  }
-  
-  .logo {
-  padding: 20px;
-  text-align: center;
-  background-color:  #1e1e2d; /* 使用漂亮的蓝色作为背景 */
-  border-radius: 8px; /* 增加圆角效果 */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加柔和的阴影 */
-  transition: all 0.3s ease; /* 添加平滑过渡效果 */
+});
+</script>
+
+<style scoped>
+.task-management {
+  min-height: 100vh;
+  padding: 40px;
+  background: #ffffff;
+  width: 1560px;
 }
 
-
-.logo-text {
-  display: block;
-  color: #ffffff;
-  margin-top: 20px;
-  font-family: 'Arial', sans-serif; /* 使用更现代的字体 */
-  font-size: 24px; /* 增大字体大小 */
-  font-weight: bold; /* 加粗文本 */
-  letter-spacing: 1px; /* 增加字母间距 */
-  text-transform: uppercase; /* 将文本转换为大写 */
+.page-header {
+  margin-bottom: 40px;
 }
 
-  
-  .header {
-    background-color: #ffffff;
-    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-  }
-  
-  .page-title {
-    font-size: 20px;
-    color: #1e1e2d;
-  }
-  .sidebar .el-menu-item span {
-  font-size: 16px;
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-section {
+  position: relative;
+}
+
+.title-section h1 {
+  font-size: 32px;
+  color: #1a1a1a;
+  margin: 0;
+  font-weight: 600;
+}
+
+.title-decoration {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  gap: 8px;
+}
+
+.line {
+  height: 3px;
+  width: 30px;
+  background: linear-gradient(90deg, #409eff, #67c23a);
+  border-radius: 1.5px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #409eff;
+}
+
+.statistics-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #eaeaea;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #ecf5ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #409eff;
+  font-size: 24px;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.task-table-container {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.table-header {
+  margin-bottom: 24px;
+
+}
+
+.table-header h2 {
+  font-size: 24px;
+  color: #1a1a1a;
+  margin: 0;
+  margin-bottom: 12px;
+  font-weight: 700;
+
+}
+
+.header-line {
+  height: 3px;
+  width: 40px;
+  background: #409eff;
+  border-radius: 1.5px;
+}
+
+.custom-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:deep(.el-table) {
+  border: 1px solid #eaeaea;
+}
+
+.task-id {
+  font-family: 'Monaco', monospace;
+  color: #409eff;
   font-weight: 500;
 }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
+
+.task-name {
+  font-weight: 500;
+}
+
+.status-tag {
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.time-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+
+.refresh-button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+:deep(.el-button--primary) {
+  background: linear-gradient(45deg, #409eff, #67c23a);
+  border: none;
+}
+
+:deep(.el-button--primary:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(64, 158, 255, 0.4);
   }
-  
-  .username {
-    margin-left: 10px;
-    font-size: 14px;
-    color: #5e6278;
+  70% {
+    box-shadow: 0 0 0 10px rgba(64, 158, 255, 0);
   }
-  
-  .steps-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
+  100% {
+    box-shadow: 0 0 0 0 rgba(64, 158, 255, 0);
   }
-  
-  .mb-4 {
-    margin-bottom: 20px;
-  }
-  
-  .query-button {
-    margin-bottom: 20px;
-  }
-  </style>
+}
+
+.refresh-button {
+  animation: pulse 2s infinite;
+}
+</style>

@@ -1,131 +1,170 @@
 <template>
   <el-container class="layout-container">
-    <!-- Sidebar menu - Kept original -->
-    <el-aside width="240px" class="sidebar">
+    <!-- Sidebar menu -->
+    <el-aside width="280px" class="sidebar">
       <div class="logo">
-        <span class="logo-text">VCIS大模型生成内容检测平台</span>
+        <!--<el-image
+          style="width: 40px; height: 40px;"
+          src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+          fit="cover"
+        />-->
+        <span class="logo-text">大模型生成内容检测平台</span>
       </div>
-      <el-menu
-        :default-active="activeMenu"
-        background-color="#1e1e2d"
-        text-color="#a2a3b7"
-        active-text-color="#ffffff"
-        @select="handleSelect"
-      >
-        <el-menu-item index="llm">
-          <i class="el-icon-setting"></i>
-          <el-icon><MessageBox /></el-icon>
-          <span>大模型配置</span>
-        </el-menu-item>
-        <el-menu-item index="dateset">
-          <i class="el-icon-document"></i>
-          <el-icon><Edit /></el-icon>
-          <span>数据集选择</span>
-        </el-menu-item>
-        <el-menu-item index="task">
-          <i class="el-icon-plus"></i>
-          <el-icon><Notification /></el-icon>
-          <span>发布任务</span>
-        </el-menu-item>
-        <el-menu-item index="taskmanger">
-          <i class="el-icon-s-order"></i>
-          <el-icon><Compass /></el-icon>
-          <span>任务管理</span>
-        </el-menu-item>
-      </el-menu>
+      
+      <!-- 卡片式菜单 -->
+      <div class="menu-cards">
+        <div
+          v-for="item in menuItems"
+          :key="item.index"
+          :class="['menu-card', { active: currentRoute === item.index }]"
+          @click="handleSelect(item.index)"
+        >
+          <div class="card-content">
+            <el-icon class="card-icon">
+              <component :is="item.icon" />
+            </el-icon>
+            <span class="card-title">{{ item.title }}</span>
+          </div>
+        </div>
+      </div>
     </el-aside>
 
-    <!-- Main content area - Enhanced -->
+    <!-- Main content area -->
     <el-container>
       <el-header class="header">
-        <h2 class="page-title">{{ currentPageTitle }}</h2>
+        <div class="header-left">
+          <h1 class="platform-title">大模型测试平台</h1>
+          <h2 class="page-title">{{ currentPageTitle }}</h2>
+        </div>
         <div class="user-info">
-          <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-          <span class="username">用户名</span>
+          <el-dropdown>
+            <div class="user-dropdown-link">
+              <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+              <span class="username">用户名</span>
+              <el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>个人信息</el-dropdown-item>
+                <el-dropdown-item>设置</el-dropdown-item>
+                <el-dropdown-item divided>退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </el-header>
+      
       <el-main class="main-content">
-        <component :is="currentComponent" v-if="currentComponent" />
-        <div v-else class="welcome-content">
-          <h2>欢迎使用VCIS大模型生成内容检测平台</h2>
-          <p>本平台测评方式严格参照《生成式人工智能服务安全基本要求》。请按以下步骤操作：</p>
-          <ol>
-            <li>配置大模型</li>
-            <li>从数据集中选取题目及数量</li>
-            <li>选取需要测评的关键词数量</li>
-            <li>选择配置的大模型、题库及关键词</li>
-            <li>发布测评任务</li>
-          </ol>
-        </div>
+        <router-view v-slot="{ Component }">
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, shallowRef, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineComponent, ref, computed, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { 
+  Setting, 
+  List, 
+  Key, 
+  Edit, 
+  Notification, 
+  Compass,
+  ArrowDown
+} from '@element-plus/icons-vue';
 
 export default defineComponent({
   name: 'TestLayout',
+  components: {
+    Setting,
+    List,
+    Key,
+    Edit,
+    Notification,
+    Compass,
+    ArrowDown
+  },
   setup() {
-    const router = useRouter()
-    const currentComponent = shallowRef(null)
-    const activeMenu = ref('')
+    const router = useRouter();
+    const route = useRoute();
+    
+    // 获取当前路由
+    const currentRoute = computed(() => {
+      const path = route.path;
+      const lastSegment = path.split('/').pop();
+      return lastSegment || 'llm';
+    });
 
+    const menuItems = [
+      {
+        icon: 'Setting',
+        title: '大模型配置',
+        index: 'llm'
+      },
+      {
+        icon: 'List',
+        title: '数据集选择',
+        index: 'dateset'
+      },
+      {
+        icon: 'Edit',
+        title: '发布任务',
+        index: 'task'
+      },
+      {
+        icon: 'Notification',
+        title: '任务管理',
+        index: 'taskmanger'
+      },
+      {
+        icon: 'Notification',
+        title: '回到首頁',
+        index: '../lgtmain'
+      },
+    ];
+    
     const currentPageTitle = computed(() => {
-      switch (activeMenu.value) {
-        case 'llm': return '大模型配置'
-        case 'dateset': return '数据集选择'
-        case 'task': return '发布任务'
-        case 'taskmanger': return '任务管理'
-        default: return '欢迎'
-      }
-    })
+      return menuItems.find(item => item.index === currentRoute.value)?.title || '';
+    });
 
-    const handleSelect = async (key: string) => {
-      activeMenu.value = key
-      
-      try {
-        let componentPath = '';
-        switch(key) {
-          case 'llm':
-            componentPath = '/src/components/Thirdpartyevaluation/llm.vue';
-            break;
-          case 'dateset':
-            componentPath = '/src/components/Thirdpartyevaluation/dateset.vue';
-            break;
-          case 'task':
-            componentPath = '/src/components/Thirdpartyevaluation/Task.vue';
-            break;
-          case 'taskmanger':
-            componentPath = '/src/components/Thirdpartyevaluation/Taskmanger.vue';
-            break;
-          default:
-            currentComponent.value = null;
-            return;
+    const handleSelect = (key: string) => {
+      router.push(`/test/${key}`);
+    };
+
+    // 监听路由变化
+    watch(
+      () => route.path,
+      (newPath) => {
+        if (!newPath.includes('/test/')) {
+          router.push('/test/llm');
         }
-        
-        const component = await import(/* @vite-ignore */ componentPath);
-        currentComponent.value = component.default;
-        router.push(`/${key}`);
-      } catch (error) {
-        console.error(`Failed to load component: ${key}`, error);
-        currentComponent.value = null;
       }
-    }
+    );
+
+    // 组件挂载时检查路由
+    onMounted(() => {
+      if (!route.path.includes('/test/')) {
+        router.push('/test/llm');
+      }
+    });
 
     return {
-      currentComponent,
-      activeMenu,
-      handleSelect,
-      currentPageTitle
-    }
+      menuItems,
+      currentRoute,
+      currentPageTitle,
+      handleSelect
+    };
   }
-})
+});
 </script>
 
 <style scoped>
+/* 样式保持不变 */
 .layout-container {
   height: 100vh;
   display: flex;
@@ -133,33 +172,82 @@ export default defineComponent({
 }
 
 .sidebar {
-  background-color: #1e1e2d;
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
-}
-.sidebar .el-menu-item span {
-  font-size: 16px;
-  font-weight: 500;
-}
-  
-.logo {
   padding: 20px;
+  border-right: 1px solid #e6e6e6;
+}
+
+.logo {
   text-align: center;
-  background-color: #1e1e2d;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
 .logo-text {
-  display: block;
-  color: #ffffff;
+  color: #333333;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.menu-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-top: 20px;
-  font-family: 'Arial', sans-serif; /* 使用更现代的字体 */
-  font-size: 24px; /* 增大字体大小 */
-  font-weight: bold; /* 加粗文本 */
-  letter-spacing: 1px; /* 增加字母间距 */
-  text-transform: uppercase; /* 将文本转换为大写 */
+}
+
+.menu-card {
+  background-color: #f5f7fa;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #e6e6e6;
+}
+
+.menu-card:hover {
+  background-color: #ecf5ff;
+  transform: translateX(4px);
+}
+
+.menu-card.active {
+  background-color: #409eff;
+  border-color: #409eff;
+  position: relative;
+}
+
+.menu-card.active .card-icon,
+.menu-card.active .card-title {
+  color: #ffffff;
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-icon {
+  font-size: 20px;
+  color: #606266;
+}
+
+.card-title {
+  font-size: 16px;
+  color: #606266;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.menu-card:hover .card-icon,
+.menu-card:hover .card-title {
+  color: #409eff;
 }
 
 .header {
@@ -172,10 +260,26 @@ export default defineComponent({
   height: 70px;
 }
 
-.page-title {
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.platform-title {
   font-size: 24px;
-  color: #1e1e2d;
+  color: #409eff;
+  font-weight: bold;
+  margin: 0;
+}
+
+.page-title {
+  font-size: 20px;
+  color: #606266;
   font-weight: 500;
+  margin: 0;
+  padding-left: 20px;
+  border-left: 2px solid #e6e6e6;
 }
 
 .user-info {
@@ -183,42 +287,31 @@ export default defineComponent({
   align-items: center;
 }
 
+.user-dropdown-link {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 .username {
-  margin-left: 15px;
+  margin: 0 10px;
   font-size: 16px;
-  color: #5e6278;
+  color: #606266;
   font-weight: 500;
 }
 
 .main-content {
   padding: 30px;
   background-color: #f5f7fa;
+  height: calc(100vh - 70px);
+  overflow-y: auto;
 }
 
-.welcome-content {
-  background-color: #ffffff;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+:deep(.el-dropdown-menu__item) {
+  padding: 8px 20px;
 }
 
-.welcome-content h2 {
-  color: #1e1e2d;
-  margin-bottom: 20px;
-}
-
-.welcome-content p {
-  color: #5e6278;
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
-
-.welcome-content ol {
-  color: #5e6278;
-  padding-left: 20px;
-}
-
-.welcome-content li {
-  margin-bottom: 10px;
+:deep(.el-dropdown-menu__item:not(:last-child)) {
+  border-bottom: 1px solid #f0f0f0;
 }
 </style>

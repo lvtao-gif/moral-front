@@ -112,53 +112,12 @@ const router = createRouter({
 
                 },
                 {
-                    path:'/test',
-                    name:'test',
-                    component: () => import('@/components/redteam/test.vue'),
-
-                },
-                {
                     path:'/lgtmain',
                     name:'lgtmain',
                     component: () => import('@/components/Thirdpartyevaluation/lgtmain.vue'),
-
+        
                 },
-                {
-                    path:'/llm',
-                    name:'llm',
-                    component: () => import('@/components/Thirdpartyevaluation/llm.vue'),
 
-                },
-                {
-                    path:'/dateset',
-                    name:'dateset',
-                    component: () => import('@/components/Thirdpartyevaluation/dateset.vue'),
-
-                },
-                {
-                    path:'/keyword',
-                    name:'keyword',
-                    component: () => import('@/components/Thirdpartyevaluation/keyword.vue'),
-
-                },
-                {
-                    path:'/task',
-                    name:'task',
-                    component: () => import('@/components/Thirdpartyevaluation/Task.vue'),
-
-                },
-                {
-                    path:'/taskmanger',
-                    name:'taskmanger',
-                    component: () => import('@/components/Thirdpartyevaluation/Taskmanger.vue'),
-
-                },
-                {
-                    path:'/lgt',
-                    name:'lgt',
-                    component: () => import('@/components/Thirdpartyevaluation/lgt.vue'),
-
-                },
                 {
                     path: '/rank_list',
                     name: 'rank_list',
@@ -191,6 +150,44 @@ const router = createRouter({
             name: 'LoginView',
             component: () => import('@/views/LoginView.vue')
         },
+        {
+            // 修改test路由，添加子路由
+            path: '/test',
+            name: 'test',
+            component: () => import('@/components/redteam/test.vue'),
+            children: [
+                {
+                    path: 'llm',
+                    name: 'llm',
+                    component: () => import('@/components/Thirdpartyevaluation/llm.vue'),
+                },
+                {
+                    path: 'dateset',
+                    name: 'dateset',
+                    component: () => import('@/components/Thirdpartyevaluation/dateset.vue'),
+                },
+                {
+                    path: 'keyword',
+                    name: 'keyword',
+                    component: () => import('@/components/Thirdpartyevaluation/keyword.vue'),
+                },
+                {
+                    path: 'task',
+                    name: 'task',
+                    component: () => import('@/components/Thirdpartyevaluation/Task.vue'),
+                },
+                {
+                    path: 'taskmanger',
+                    name: 'taskmanger',
+                    component: () => import('@/components/Thirdpartyevaluation/Taskmanger.vue'),
+                },
+                {
+                    path: 'lgt',
+                    name: 'lgt',
+                    component: () => import('@/components/Thirdpartyevaluation/lgt.vue'),
+                },
+            ]
+        }
     ]
 })
 

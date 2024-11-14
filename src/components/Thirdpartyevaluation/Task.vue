@@ -1,140 +1,167 @@
 <template>
-  <el-container class="layout-container">
-    <!-- Sidebar menu -->
-    <el-aside width="240px" class="sidebar">
-      <div class="logo">
-        <span class="logo-text">VCIS大模型生成内容检测平台</span>
+  <div class="task-container">
+    <div class="main-content">
+      <div class="section-title">
+        <h1>发布任务</h1>
+        <div class="title-line"></div>
       </div>
-      <el-menu
-        :default-active="activeMenu"
-        background-color="#1e1e2d"
-        text-color="#a2a3b7"
-        active-text-color="#ffffff"
-        @select="handleSelect"
-      >
-        <el-menu-item index="llm">
-          <el-icon><MessageBox /></el-icon>
-          <span>大模型配置</span>
-        </el-menu-item>
-        <el-menu-item index="dateset">
-          <el-icon><Edit /></el-icon>
-          <span>数据集选择</span>
-        </el-menu-item>
-        <el-menu-item index="task">
-          <el-icon><Notification /></el-icon>
-          <span>发布任务</span>
-        </el-menu-item>
-        <el-menu-item index="taskmanger">
-          <el-icon><Compass /></el-icon>
-          <span>任务管理</span>
-        </el-menu-item>
-      </el-menu>
-    </el-aside>
 
-    <!-- Main content area -->
-    <el-container>
-      <el-header class="header">
-        <h2 class="page-title">{{ currentPageTitle }}</h2>
-        <div class="user-info">
-          <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-          <span class="username">用户名</span>
-        </div>
-      </el-header>
-      <el-main>
-        <div class="steps-container">
-          <el-steps
-            style="width: 500px;"
-            :space="200"
-            :active="2"
-            finish-status="success"
-          >
-            <el-step title="大模型配置" />
-            <el-step title="数据集选择" />
-            <el-step title="发布任务" />
-            <el-step title="任务管理" />
-          </el-steps>
-        </div>
-        <div class="mb-4">
+      <!-- 数据集部分 -->
+      <div class="card dataset-section">
+        <div class="card-header">
           <h2>我的数据集</h2>
-          <el-table :data="datasets" border style="width: 100%" @selection-change="handleDatasetSelectionChange">
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="id" label="数据集ID" width="500" />
-            <el-table-column prop="name" label="数据集选择" width="520" />
-            <el-table-column label="数据集操作" width="500">
-              <template #default="scope">
-                <el-button @click="deleteDataset(scope.$index, datasets)" type="danger">删除</el-button>
-                <el-button @click="queryDataset(scope.row)" type="primary">查看数据集</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="header-line"></div>
+        </div>
+        <el-table 
+          :data="datasets" 
+          border 
+          style="width: 100%" 
+          @selection-change="handleDatasetSelectionChange"
+          class="custom-table"
+        >
+          <el-table-column type="selection" width="55" />
+          <el-table-column prop="id" label="数据集ID" min-width="200" />
+          <el-table-column prop="name" label="数据集名称" min-width="200" />
+          <el-table-column label="操作" min-width="200">
+            <template #default="scope">
+              <div class="button-group">
+                <el-button 
+                  @click="deleteDataset(scope.$index, datasets)" 
+                  type="danger" 
+                  plain
+                  :icon="Delete"
+                >删除</el-button>
+                <el-button 
+                  @click="queryDataset(scope.row)" 
+                  type="primary" 
+                  plain
+                  :icon="View"
+                >查看详情</el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
+      <!-- 模型部分 -->
+      <div class="card model-section">
+        <div class="card-header">
           <h2>我的大模型</h2>
-          <el-table :data="models" border style="width: 100%" @selection-change="handleModelSelectionChange">
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="id" label="大模型ID" width="400" />
-            <el-table-column prop="name" label="大模型名称" width="500" />
-            <el-table-column label="大模型操作" width="620">
-              <template #default="scope">
-                <el-button @click="deleteModel(scope.$index, models)" type="danger">删除</el-button>
-                <el-button @click="queryModel(scope.row)" type="primary">查看大模型详情</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="header-line"></div>
         </div>
-        <div class="button-container">
-          <el-button type="success" class="custom-button" @click="openPublishDialog">发布任务</el-button>
-          <el-button type="success" class="custom-button" @click="goToNextStep">下一步</el-button>
-        </div>
-      </el-main>
-    </el-container>
-  </el-container>
+        <el-table 
+          :data="models" 
+          border 
+          style="width: 100%" 
+          @selection-change="handleModelSelectionChange"
+          class="custom-table"
+        >
+          <el-table-column type="selection" width="55" />
+          <el-table-column prop="id" label="大模型ID" min-width="200" />
+          <el-table-column prop="name" label="大模型名称" min-width="200" />
+          <el-table-column label="操作" min-width="200">
+            <template #default="scope">
+              <div class="button-group">
+                <el-button 
+                  @click="deleteModel(scope.$index, models)" 
+                  type="danger" 
+                  plain
+                  :icon="Delete"
+                >删除</el-button>
+                <el-button 
+                  @click="queryModel(scope.row)" 
+                  type="primary" 
+                  plain
+                  :icon="View"
+                >查看详情</el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
-  <!-- Dialog for task name input -->
-  <el-dialog v-model="dialogVisible" title="发布任务" width="30%">
-    <el-input v-model="taskName" placeholder="请输入任务名称"></el-input>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="publishTask">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
-  
-  <!-- Dialog for model details -->
-  <el-dialog v-model="modelDialogVisible" title="模型详情" width="80%">
-    <el-collapse v-if="modelData.length > 0">
-      <el-collapse-item v-for="model in modelData" :key="model.modelId" :title="`模型 ${model.modelId}: ${model.modelName}`">
-        <el-descriptions :column="1" border>
-          <el-descriptions-item label="Model ID">{{ model.modelId }}</el-descriptions-item>
-          <el-descriptions-item label="Model Name">{{ model.modelName }}</el-descriptions-item>
-          <el-descriptions-item label="Model Config">
-            <el-descriptions :column="1" border>
-              <el-descriptions-item label="Answer">{{ model.modelConfig.answer }}</el-descriptions-item>
-              <el-descriptions-item label="Concurrency">{{ model.modelConfig.concurrency }}</el-descriptions-item>
-              <el-descriptions-item label="Retries">{{ model.modelConfig.retries }}</el-descriptions-item>
-              <el-descriptions-item label="Timeout">{{ model.modelConfig.timeout }}</el-descriptions-item>
-              <el-descriptions-item label="URL">{{ model.modelConfig.url }}</el-descriptions-item>
-              <el-descriptions-item label="Data">
-                <pre>{{ JSON.stringify(model.modelConfig.data, null, 2) }}</pre>
-              </el-descriptions-item>
-              <el-descriptions-item label="Headers">
-                <pre>{{ JSON.stringify(model.modelConfig.headers, null, 2) }}</pre>
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-collapse-item>
-    </el-collapse>
-    <el-empty v-else description="暂无模型数据"></el-empty>
-  </el-dialog>
-  <el-dialog v-model="datasetDialogVisible" title="数据集详情" width="60%">
-    <el-table v-if="datasetData.length > 0" :data="datasetData" border style="width: 100%">
-      <el-table-column prop="datasetId" label="数据集ID" width="120" />
-      <el-table-column prop="datasetName" label="数据集名称" width="200" />
-      <el-table-column prop="questionCount" label="问题数量" width="120" />
-    </el-table>
-    <el-empty v-else description="暂无数据集数据"></el-empty>
-  </el-dialog>
+      <!-- 操作按钮 -->
+      <div class="action-buttons">
+        <el-button 
+          type="primary" 
+          class="action-button" 
+          @click="openPublishDialog"
+          :icon="Send"
+        >发布任务</el-button>
+        <el-button 
+          type="success" 
+          class="action-button" 
+          @click="goToNextStep"
+          :icon="ArrowRight"
+        >下一步</el-button>
+      </div>
+    </div>
+
+    <!-- 弹窗部分 -->
+    <el-dialog 
+      v-model="dialogVisible" 
+      title="发布任务" 
+      width="30%"
+      class="custom-dialog"
+    >
+      <el-input v-model="taskName" placeholder="请输入任务名称">
+        <template #prefix>
+          <el-icon><Document /></el-icon>
+        </template>
+      </el-input>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="publishTask">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 模型详情弹窗 -->
+    <el-dialog 
+      v-model="modelDialogVisible" 
+      title="模型详情" 
+      width="80%"
+      class="custom-dialog"
+    >
+      <el-collapse v-if="modelData.length > 0">
+        <el-collapse-item 
+          v-for="model in modelData" 
+          :key="model.modelId" 
+          :title="`模型 ${model.modelId}: ${model.modelName}`"
+        >
+          <el-descriptions :column="1" border>
+            <el-descriptions-item label="Model ID">{{ model.modelId }}</el-descriptions-item>
+            <el-descriptions-item label="Model Name">{{ model.modelName }}</el-descriptions-item>
+            <el-descriptions-item label="Model Config">
+              <pre>{{ JSON.stringify(model.modelConfig, null, 2) }}</pre>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-collapse-item>
+      </el-collapse>
+      <el-empty v-else description="暂无模型数据"></el-empty>
+    </el-dialog>
+
+    <!-- 数据集详情弹窗 -->
+    <el-dialog 
+      v-model="datasetDialogVisible" 
+      title="数据集详情" 
+      width="60%"
+      class="custom-dialog"
+    >
+      <el-table 
+        v-if="datasetData.length > 0" 
+        :data="datasetData" 
+        border 
+        class="custom-table"
+      >
+        <el-table-column prop="datasetId" label="数据集ID" width="120" />
+        <el-table-column prop="datasetName" label="数据集名称" width="200" />
+        <el-table-column prop="questionCount" label="问题数量" width="120" />
+      </el-table>
+      <el-empty v-else description="暂无数据集数据"></el-empty>
+    </el-dialog>
+  </div>
 </template>
 
 <script lang="ts">
@@ -224,7 +251,7 @@ export default defineComponent({
     };
 
     const goToNextStep = () => {
-      router.push('/taskmanger');
+      router.push('/test/taskmanger');
     };
 
     const deleteDataset = async (index: number, list: any[]) => {
@@ -332,101 +359,154 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
-.layout-container {
-  height: 100vh;
+.task-container {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 40px;
 }
 
-.sidebar {
-  background-color: #1e1e2d;
+.main-content {
+  width: 1480px;
+  margin: 0 auto;
 }
-.sidebar .el-menu-item span {
+
+.section-title {
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.section-title h1 {
+  font-size: 32px;
+  color: #1a1a1a;
+  margin: 0;
+  font-weight: 600;
+}
+
+.title-line {
+  height: 4px;
+  width: 60px;
+  background: linear-gradient(90deg, #409eff, #67c23a);
+  margin-top: 12px;
+  border-radius: 2px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.card-header h2 {
+  font-size: 24px;
+  color: #000000;
+  margin: 0;
+  font-weight: 600;
+}
+
+.header-line {
+  height: 3px;
+  width: 40px;
+  background: #409eff;
+  margin-top: 8px;
+  border-radius: 1.5px;
+}
+
+.custom-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:deep(.el-table th) {
+  background-color: #f8fafc;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+:deep(.el-table td) {
+  padding: 16px 0;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.action-button {
+  padding: 12px 24px;
+  font-size: 16px;
+
+}
+
+.custom-dialog {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+:deep(.el-dialog__header) {
+  padding: 20px;
+  margin: 0;
+  background: #f8fafc;
+}
+
+:deep(.el-dialog__body) {
+  padding: 24px;
+}
+
+:deep(.el-input__wrapper) {
+  padding: 8px 12px;
+}
+
+:deep(.el-collapse-item__header) {
   font-size: 16px;
   font-weight: 500;
 }
 
-.logo {
-  padding: 20px;
-  text-align: center;
-  background-color: #1e1e2d;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+:deep(.el-descriptions__label) {
+  font-weight: 500;
 }
 
-.logo-text {
-  display: block;
-  color: #ffffff;
-  margin-top: 20px;
-  font-family: 'Arial', sans-serif;
-  font-size: 24px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.header {
-  background-color: #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-}
-
-.page-title {
-  font-size: 20px;
-  color: #1e1e2d;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-}
-
-.username {
-  margin-left: 10px;
+pre {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Monaco', monospace;
   font-size: 14px;
-  color: #5e6278;
+  color: #2c3e50;
 }
 
-.steps-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.mb-4 {
-  margin-bottom: 20px;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.custom-button {
-  font-size: 16px;
-  padding: 12px 20px;
-}
-.el-dialog__body {
-  padding: 20px;
-}
-
-.el-table {
-  margin-bottom: 20px;
-}
-
-.el-table th {
-  background-color: #f5f7fa;
-  color: #606266;
-  font-weight: bold;
-}
-
-.el-table__row:hover {
-  background-color: #f5f7fa;
+/* 添加渐变动画效果 */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 </style>

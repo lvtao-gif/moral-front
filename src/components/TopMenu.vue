@@ -41,7 +41,7 @@ const activeMenu = ref('/');
         </el-sub-menu>
         <el-menu-item index="/lgtmain" class="menu-text"> 大模型生成内容测试平台</el-menu-item>
         <el-menu-item index="/redteammain" class="menu-text"> 红队攻击平台</el-menu-item>
-        <!--<el-menu-item index="/test" class="menu-text"> test</el-menu-item>-->
+        <el-menu-item index="/test" class="menu-text"> test</el-menu-item>
       </div>
     </el-menu>
 
