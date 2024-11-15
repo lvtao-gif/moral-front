@@ -61,7 +61,7 @@
             <el-input 
               v-model="formData.apiConfig" 
               type="textarea" 
-              :rows="15" 
+              :rows="20" 
               placeholder="请输入API配置（JSON格式）"
               class="custom-textarea"
             ></el-input>
@@ -102,13 +102,13 @@ const formData = ref({
   teamName: '',
   modelName: '',
   apiConfig: JSON.stringify({
-    "url": "LLM-API地址",
+    "url": "请输入被测大模型请求地址",
     "headers": {
       "Content-Type": "application/json",
-      "Authorization": "Bearer 请填入您的API"
+      "Authorization": "Bearer 请填入您的API的KEY"
     },
     "data": {
-      "model": "glm-4",
+      "model": "请填入您的大模型名称",
       "messages": [
         {
           "role": "user",

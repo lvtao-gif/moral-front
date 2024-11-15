@@ -1,70 +1,119 @@
 <template>
   <div class="dataset-container">
-    <div class="dataset-header">
-      <div class="category-row">
-        <div class="category-cell"></div>
-        <div class="category-cell">一级分类</div>
-        <div class="category-cell">二级分类</div>
-        <div class="count-cell">标准题数</div>
-        <div class="count-cell">高级攻击题数</div>
-      </div>
-    </div>
-    <el-form class="dataset-form" :model="datasetParams">
-      <div v-for="(category, categoryIndex) in datasetParams.categories" 
-           :key="categoryIndex" 
-           class="category-section"
-           :class="{ 'alt-background': categoryIndex % 2 === 1 }">
-        <div class="category-row">
-          <div class="checkbox-cell">
-            <el-checkbox 
-              v-model="category.selected"
-              @change="(val) => handleMainCategoryChange(val, categoryIndex)"
-            ></el-checkbox>
-          </div>
-          <div class="main-category-cell">{{ category.name }}</div>
-          <div class="subcategories-cell">
-            <div v-for="(subcategory, subIndex) in category.subcategories" 
-                 :key="subcategory.name" 
-                 class="subcategory-item">
-              <el-checkbox 
-                v-model="subcategory.selected"
-                @change="(val) => handleSubCategoryChange(val, categoryIndex, subIndex)"
-              >
-                {{ subcategory.name }}
-              </el-checkbox>
-            </div>
-          </div>
-          <div class="count-inputs">
-            <el-input-number 
-              v-model="category.standard_count"
-              :min="0"
-              :max="999"
-              size="small"
-              controls-position="right"
-            />
-          </div>
-          <div class="count-inputs">
-            <el-input-number 
-              v-model="category.advanced_attack_count"
-              :min="0"
-              :max="999"
-              size="small"
-              controls-position="right"
-            />
+    <h2 class="page-title">选择数据集方式</h2>
+    <div class="cards-container">
+      <!-- 勾选系统数据集卡片 -->
+      <div class="selection-card" @click="openSystemDialog">
+        <div class="card-header">
+          <el-icon class="header-icon"><Document /></el-icon>
+          <div class="header-content">
+            <h3 class="card-title">配置系统数据集</h3>
+            <p class="card-description">从系统预设的数据集中进行选择和配置</p>
           </div>
         </div>
+        <div class="card-content">
+          <ul class="feature-list">
+            <li>支持多分类选择</li>
+            <li>可配置标准题数和高级攻击题数</li>
+            <li>系统预置分类体系</li>
+          </ul>
+        </div>
       </div>
-    </el-form>
 
-    <div class="total-count">
-      已选择：{{ selectedCount }} / {{ totalCount }} 题目
+      <!-- 上传自用数据集卡片 -->
+      <div class="selection-card" @click="openUploadDialog">
+        <div class="card-header">
+          <el-icon class="header-icon"><Upload /></el-icon>
+          <div class="header-content">
+            <h3 class="card-title">上传自用数据集</h3>
+            <p class="card-description">上传您自己的自定义数据集文件</p>
+          </div>
+        </div>
+        <div class="card-content">
+          <ul class="feature-list">
+            <li>支持CSV、Excel、JSON格式</li>
+            <li>文件大小限制10MB</li>
+            <li>自定义数据结构</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <div class="form-actions">
-      <el-button type="primary" @click="openUploadDialog" class="action-button">上传自用数据集</el-button>
-      <el-button type="success" @click="openNameDialog"  class="action-button">保存数据集</el-button>
-      <el-button type="primary" @click="goToNextStep" class="action-button">下一步</el-button>
-    </div>
+    <!-- 系统数据集选择对话框 -->
+    <el-dialog
+      title="选择系统数据集"
+      v-model="systemDialogVisible"
+      width="80%"
+      :close-on-click-modal="false"
+    >
+      <div class="dataset-header">
+        <div class="category-row">
+          <div class="category-cell"></div>
+          <div class="category-cell">一级分类</div>
+          <div class="category-cell">二级分类</div>
+          <div class="count-cell">标准题数</div>
+          <div class="count-cell">高级攻击题数</div>
+        </div>
+      </div>
+      <el-form class="dataset-form" :model="datasetParams">
+        <div v-for="(category, categoryIndex) in datasetParams.categories" 
+             :key="categoryIndex" 
+             class="category-section"
+             :class="{ 'alt-background': categoryIndex % 2 === 1 }">
+          <div class="category-row">
+            <div class="checkbox-cell">
+              <el-checkbox 
+                v-model="category.selected"
+                @change="(val) => handleMainCategoryChange(val, categoryIndex)"
+              ></el-checkbox>
+            </div>
+            <div class="main-category-cell">{{ category.name }}</div>
+            <div class="subcategories-cell">
+              <div v-for="(subcategory, subIndex) in category.subcategories" 
+                   :key="subcategory.name" 
+                   class="subcategory-item">
+                <el-checkbox 
+                  v-model="subcategory.selected"
+                  @change="(val) => handleSubCategoryChange(val, categoryIndex, subIndex)"
+                >
+                  {{ subcategory.name }}
+                </el-checkbox>
+              </div>
+            </div>
+            <div class="count-inputs">
+              <el-input-number 
+                v-model="category.standard_count"
+                :min="0"
+                :max="999"
+                size="small"
+                controls-position="right"
+              />
+            </div>
+            <div class="count-inputs">
+              <el-input-number 
+                v-model="category.advanced_attack_count"
+                :min="0"
+                :max="999"
+                size="small"
+                controls-position="right"
+              />
+            </div>
+          </div>
+        </div>
+      </el-form>
+
+      <div class="total-count">
+        已选择：{{ selectedCount }} / {{ totalCount }} 题目
+      </div>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="systemDialogVisible = false">取 消</el-button>
+          <el-button type="success" @click="openNameDialog">保存数据集</el-button>
+          <el-button type="primary" @click="handleSystemConfirm">确定</el-button>
+        </div>
+      </template>
+    </el-dialog>
 
     <!-- 保存数据集对话框 -->
     <el-dialog
@@ -83,64 +132,60 @@
 
     <!-- 上传数据集对话框 -->
     <el-dialog
-  title="上传数据集"
-  v-model="uploadDialogVisible"
-  width="40%"
->
-  <div class="upload-container">
-    <el-upload
-      class="upload-demo"
-      drag
-      action="http://10.110.147.246:5004/upload-dataset"
-      :headers="uploadHeaders"
-      :on-success="handleUploadSuccess"
-      :on-error="handleUploadError"
-      :before-upload="beforeUpload"
-      accept=".csv,.xlsx,.json"
+      title="上传数据集"
+      v-model="uploadDialogVisible"
+      width="40%"
     >
-      <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-      <div class="el-upload__text">
-        拖拽文件到此处或 <em>点击上传</em>
+      <div class="upload-container">
+        <el-upload
+          class="upload-demo"
+          drag
+          action="http://10.110.147.246:5004/upload-dataset"
+          :headers="uploadHeaders"
+          :on-success="handleUploadSuccess"
+          :on-error="handleUploadError"
+          :before-upload="beforeUpload"
+          accept=".csv,.xlsx,.json"
+        >
+          <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+          <div class="el-upload__text">
+            拖拽文件到此处或 <em>点击上传</em>
+          </div>
+          <template #tip>
+            <div class="el-upload__tip">
+              支持的文件格式：CSV、Excel、JSON（文件大小不超过10MB）
+            </div>
+          </template>
+        </el-upload>
       </div>
-      <template #tip>
-        <div class="el-upload__tip">
-          支持的文件格式：CSV、Excel、JSON（文件大小不超过10MB）
-        </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="uploadDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleUploadSubmit">确定</el-button>
+        </span>
       </template>
-    </el-upload>
-  </div>
-  <template #footer>
-    <span class="dialog-footer">
-      <el-button @click="uploadDialogVisible = false">取消</el-button>
-      <el-button type="primary" @click="handleUploadSubmit">确定</el-button>
-    </span>
-  </template>
-</el-dialog>
+    </el-dialog>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
-import { UploadFilled } from '@element-plus/icons-vue';
-import {
-  Check,
-  Delete,
-  Edit,
-  Message,
-  Search,
-  Star,
-} from '@element-plus/icons-vue'
+import { Document, Upload, UploadFilled } from '@element-plus/icons-vue';
 
 export default defineComponent({
   name: 'DatasetSelection',
   components: {
+    Document,
+    Upload,
     UploadFilled,
   },
   setup() {
     const router = useRouter();
     const dialogVisible = ref(false);
+    const systemDialogVisible = ref(false);
     const uploadDialogVisible = ref(false);
     const datasetName = ref('');
     const userJwt = ref('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTI4OTE4NzF9.6OFjQ62TRDJbW4fdGvuhm3lKazws_iUUGrVKInPDMt8');
@@ -262,6 +307,84 @@ export default defineComponent({
       return true;
     };
 
+    // 打开系统数据集对话框
+    const openSystemDialog = () => {
+      systemDialogVisible.value = true;
+    };
+
+    // 处理系统数据集确认
+    const handleSystemConfirm = () => {
+      if (selectedCount.value === 0) {
+        ElMessage.warning('请至少选择一个题目');
+        return;
+      }
+      systemDialogVisible.value = false;
+      router.push('/test/task');
+    };
+    const selectedCount = computed(() => {
+      return datasetParams.value.categories.reduce((total, category) => {
+        return total + (category.standard_count || 0) + (category.advanced_attack_count || 0);
+      }, 0);
+    });
+
+    const totalCount = computed(() => 400);
+
+    const openNameDialog = () => {
+      dialogVisible.value = true;
+    };
+
+    const saveDatasetConfig = async () => {
+      if (!datasetName.value) {
+        ElMessage.error('请输入数据集名称');
+        return;
+      }
+
+      try {
+        const requestData = {
+          datasetName: datasetName.value,
+          userJwt: userJwt.value,
+          datasetParams: datasetParams.value
+        };
+        const response = await axios.post('http://10.110.147.246:5004/generate-dataset/add', requestData);
+        ElMessage.success('数据集保存成功');
+        dialogVisible.value = false;
+      } catch (error) {
+        console.error('Error:', error);
+        ElMessage.error('保存失败，请重试');
+      }
+    };
+    // 处理一级分类勾选变化
+    const handleMainCategoryChange = (checked: boolean, categoryIndex: number) => {
+      const category = datasetParams.value.categories[categoryIndex];
+      // 设置所有子分类的选中状态
+      category.subcategories.forEach(sub => {
+        sub.selected = checked;
+      });
+    };
+     // 处理二级分类勾选变化
+     const handleSubCategoryChange = (checked: boolean, categoryIndex: number, subIndex: number) => {
+      const category = datasetParams.value.categories[categoryIndex];
+      // 检查是否所有子分类都被选中
+      const allSelected = category.subcategories.every(sub => sub.selected);
+      const anySelected = category.subcategories.some(sub => sub.selected);
+      // 更新一级分类的选中状态
+      category.selected = allSelected;
+    };
+
+    // 监听子分类的变化以更新一级分类状态
+    watch(
+      () => datasetParams.value.categories,
+      (categories) => {
+        categories.forEach(category => {
+          const allSelected = category.subcategories.every(sub => sub.selected);
+          if (category.selected !== allSelected) {
+            category.selected = allSelected;
+          }
+        });
+      },
+      { deep: true }
+    );
+
     // 上传成功处理
     const handleUploadSuccess = (response: any, uploadFile: any) => {
       if (response.code === 0) {
@@ -312,91 +435,23 @@ export default defineComponent({
       }
     };
 
-    // 处理一级分类勾选变化
-    const handleMainCategoryChange = (checked: boolean, categoryIndex: number) => {
-      const category = datasetParams.value.categories[categoryIndex];
-      // 设置所有子分类的选中状态
-      category.subcategories.forEach(sub => {
-        sub.selected = checked;
-      });
-    };
-
-    // 处理二级分类勾选变化
-    const handleSubCategoryChange = (checked: boolean, categoryIndex: number, subIndex: number) => {
-      const category = datasetParams.value.categories[categoryIndex];
-      // 检查是否所有子分类都被选中
-      const allSelected = category.subcategories.every(sub => sub.selected);
-      const anySelected = category.subcategories.some(sub => sub.selected);
-      // 更新一级分类的选中状态
-      category.selected = allSelected;
-    };
-
-    // 监听子分类的变化以更新一级分类状态
-    watch(
-      () => datasetParams.value.categories,
-      (categories) => {
-        categories.forEach(category => {
-          const allSelected = category.subcategories.every(sub => sub.selected);
-          if (category.selected !== allSelected) {
-            category.selected = allSelected;
-          }
-        });
-      },
-      { deep: true }
-    );
-
-    const selectedCount = computed(() => {
-      return datasetParams.value.categories.reduce((total, category) => {
-        return total + (category.standard_count || 0) + (category.advanced_attack_count || 0);
-      }, 0);
-    });
-
-    const totalCount = computed(() => 400);
-
-    const openNameDialog = () => {
-      dialogVisible.value = true;
-    };
-
-    const saveDatasetConfig = async () => {
-      if (!datasetName.value) {
-        ElMessage.error('请输入数据集名称');
-        return;
-      }
-
-      try {
-        const requestData = {
-          datasetName: datasetName.value,
-          userJwt: userJwt.value,
-          datasetParams: datasetParams.value
-        };
-        const response = await axios.post('http://10.110.147.246:5004/generate-dataset/add', requestData);
-        ElMessage.success('数据集保存成功');
-        dialogVisible.value = false;
-      } catch (error) {
-        console.error('Error:', error);
-        ElMessage.error('保存失败，请重试');
-      }
-    };
-
-    const goToNextStep = () => {
-      router.push('/test/task');
-    };
-
     return {
-      datasetParams,
+      systemDialogVisible,
       dialogVisible,
       uploadDialogVisible,
       datasetName,
       uploadForm,
       uploadHeaders,
+      datasetParams,
       selectedCount,
       totalCount,
+      openSystemDialog,
+      handleSystemConfirm,
       handleMainCategoryChange,
       handleSubCategoryChange,
       openNameDialog,
       openUploadDialog,
       saveDatasetConfig,
-      goToNextStep,
       beforeUpload,
       handleUploadSuccess,
       handleUploadError,
@@ -405,26 +460,99 @@ export default defineComponent({
   }
 });
 </script>
-
 <style scoped>
-/* 原有样式保持不变 */
 .dataset-container {
-  padding: 20px;
+  padding: 40px;
   background-color: #fff;
   min-height: 100vh;
 }
 
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  width: 1500px;
+  margin: 0 auto;
+}
+
+.selection-card {
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+.selection-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #409eff;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.header-icon {
+  font-size: 32px;
+  color: #409eff;
+  margin-right: 16px;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #303133;
+  margin: 0 0 8px 0;
+}
+
+.card-description {
+  font-size: 14px;
+  color: #606266;
+  margin: 0;
+}
+
+.card-content {
+  padding-left: 48px;
+}
+
+.feature-list {
+  list-style-type: disc;
+  margin: 0;
+  padding-left: 20px;
+  color: #606266;
+}
+
+.feature-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* 系统数据集对话框样式 */
 .dataset-header {
   margin-bottom: 5px;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 30px;
+.dataset-form {
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  margin: 10px 0;
 }
-
 
 .category-row {
   display: grid;
@@ -477,13 +605,14 @@ export default defineComponent({
   font-size: 14px;
 }
 
-.button-container {
+.dialog-footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 20px;
+  padding-top: 20px;
 }
 
+/* Element Plus 组件深度选择器样式 */
 :deep(.el-input-number) {
   width: 120px;
 }
@@ -502,7 +631,12 @@ export default defineComponent({
   padding-right: 35px;
 }
 
+:deep(.el-dialog__body) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
 
+/* 上传对话框样式 */
 .upload-container {
   padding: 20px;
 }
@@ -542,10 +676,37 @@ export default defineComponent({
   }
 }
 
-.button-container {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 20px;
+/* 响应式布局 */
+@media (max-width: 1400px) {
+  .category-row {
+    grid-template-columns: 60px 180px 1fr 120px 120px;
+  }
+
+  .subcategory-item {
+    flex: 0 0 calc(50% - 8px);
+  }
+}
+
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .dataset-container {
+    padding: 20px;
+  }
+
+  .category-row {
+    grid-template-columns: 50px 150px 1fr 100px 100px;
+    font-size: 14px;
+  }
+
+  .subcategory-item {
+    flex: 0 0 100%;
+  }
+
+  :deep(.el-input-number) {
+    width: 90px;
+  }
 }
 </style>
