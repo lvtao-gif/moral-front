@@ -17,7 +17,7 @@
   import {} from '@element-plus/icons-vue';
   import { ref, computed, nextTick, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
-  const message = ref("本平台依据国家标准及上级部门的要求，特别是《生成式人工智能服务管理暂行办法》和《生成式人工智能服务安全基本要求》，推出了针对大模型的内容安全测试服务。该服务旨在通过对大模型生成内容的有效评估，促进相关业务的健康发展。");
+  const message = ref("本平台依据国家标准及上级部门的要求，特别是《生成式人工智能服务管理暂行办法》和《生成式人工智能服务安全基本要求》，推出了针对大模型的内容安全测试服务。该服务旨在通过对大模型生成内容的有效评估，服务于企业备案和政府监管，促进相关业务的健康发展。");
   const router = useRouter();
   function goToDashboard() {
   router.push({ name: 'test' }); // 使用路由名称跳转
@@ -94,13 +94,26 @@
 
   
 .custom-button {
-  font-size: 50px; /* 设置字体大小 */
-  padding: 50px 100px; /* 调整按钮内边距，使其更大 */
-  border-radius: 60px; /* 可选：设置按钮圆角 */
-  color: #faf9f9;
-  background-color: #af3fdf;
+  font-size: 50px;
+  padding: 50px 100px;
+  border-radius: 60px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #86a8e7, #7f7fd5, #ff7e5f);
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
-  
+
+.custom-button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #7f7fd5, #ff7e5f, #86a8e7);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.custom-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
   .description {
     margin: 20px 0;
     font-size: 16px;

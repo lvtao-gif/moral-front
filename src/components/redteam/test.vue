@@ -8,7 +8,7 @@
           src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
           fit="cover"
         />-->
-        <span class="logo-text">大模型生成内容检测平台</span>
+        <span class="logo-text" @click="goToTest">大模型生成内容检测平台</span>
       </div>
       
       <!-- 卡片式菜单 -->
@@ -121,16 +121,15 @@ export default defineComponent({
         title: '任务管理',
         index: 'taskmanger'
       },
-      {
-        icon: 'Notification',
-        title: '回到首頁',
-        index: '../lgtmain'
-      },
     ];
     
     const currentPageTitle = computed(() => {
       return menuItems.find(item => item.index === currentRoute.value)?.title || '';
     });
+
+    const goToTest = () => {
+      router.push('/lgtmain');
+    };
 
     const handleSelect = (key: string) => {
       router.push(`/test/${key}`);
@@ -153,11 +152,13 @@ export default defineComponent({
       }
     });
 
+
     return {
       menuItems,
       currentRoute,
       currentPageTitle,
-      handleSelect
+      handleSelect,
+      goToTest
     };
   }
 });
@@ -186,8 +187,12 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   gap: 12px;
+  cursor: pointer;  /* 添加鼠标指针样式 */
+  transition: opacity 0.3s ease;  /* 添加过渡效果 */
 }
-
+.logo:hover {
+  opacity: 0.8;  /* 添加悬停效果 */
+}
 .logo-text {
   color: #333333;
   font-size: 20px;

@@ -19,26 +19,77 @@
       <p>注：以下实例内容仅供红队测试使用，均不代表本团队立场，切勿随意传播，产生任何后果，本团队均不负责！！！</p>
     </div>
   </div>
-<!-- 表格卡片部分 
-    <el-row :gutter="30" class="action-row">
-<el-col :span="16">
-  <el-card class="table-card" shadow="hover" >
-    <template #header>
-      <span class="card-header-text">红队攻击成功率</span>
-    </template>
-    <el-table :data="tableData" class="model-table" style="width: 100%;">
-      <el-table-column prop="model" label="Model"></el-table-column>
-      <el-table-column prop="OASR" label="原始成功率（PoisonedRAG）"></el-table-column>
-      <el-table-column prop="ASR" label="成功率（PoisonedRAG）"></el-table-column>
-      <el-table-column prop="OASR2" label="原始成功率（PAP）"></el-table-column>
-      <el-table-column prop="ASR2" label="成功率（PAP）"></el-table-column>
-      <el-table-column prop="ASR2" label="原始成功率（FUTURE）"></el-table-column>
-      <el-table-column prop="ASR2" label="成功率（FUTURE）"></el-table-column>
-    </el-table>
-  </el-card>
-</el-col>
-</el-row>-->
 
+  <el-row :gutter="20" class="action-row">
+  <el-col :span="24">
+    <el-card class="table-card" shadow="hover">
+      <template #header>
+        <span class="card-header-text">红队攻击方法成功率</span>
+      </template>
+      <div class="method-cards">
+        <el-row :gutter="15">
+          <!-- PoisonedRAG 卡片 -->
+          <el-col :span="12">
+            <el-card class="method-card">
+              <h3>PoisonedRAG</h3>
+              <div class="success-rates">
+                <div class="model-stats" v-for="(item, index) in tableData" :key="index">
+                  <div class="model-name">{{ item.model }}</div>
+                  <div class="rate-item">
+                    <span>原始成功率: {{ item.OASR }}</span>
+                    <span>攻击成功率: {{ item.ASR }}</span>
+                  </div>
+                </div>
+              </div>
+              <p class="method-description">
+                PoisonedRAG是一种通过投毒检索增强生成的攻击方法，通过在检索阶段注入有害文档来影响模型输出。
+              </p>
+            </el-card>
+          </el-col>
+
+          <!-- PAP 卡片 -->
+          <el-col :span="12">
+            <el-card class="method-card">
+              <h3>PAP</h3>
+              <div class="success-rates">
+                <div class="model-stats" v-for="(item, index) in tableData" :key="index">
+                  <div class="model-name">{{ item.model }}</div>
+                  <div class="rate-item">
+                    <span>原始成功率: {{ item.OASR2 }}</span>
+                    <span>攻击成功率: {{ item.ASR2 }}</span>
+                  </div>
+                </div>
+              </div>
+              <p class="method-description">
+                PAP是一种基于提示的攻击方法，通过在提示中加入特定的模式来诱导模型产生期望的输出。
+              </p>
+            </el-card>
+          </el-col>
+
+          <!-- FUTURE 卡片 
+          <el-col :span="8">
+            <el-card class="method-card">
+              <h3>FUTURE</h3>
+              <div class="success-rates">
+                <div class="model-stats">
+                  <div class="rate-item">
+                    <span>功能开发中...</span>
+                  </div>
+                </div>
+              </div>
+              <p class="method-description">
+                FUTURE是一种未来防御方法的探索性攻击测试，用于评估模型对新型攻击的抵抗能力。
+              </p>
+            </el-card>
+          </el-col>-->
+        </el-row>
+      </div>
+
+      <!-- 添加图表显示 
+      <div ref="chart" class="chart-container"></div>-->
+    </el-card>
+  </el-col>
+</el-row>
   <!-- 卡片部分 -->
   <el-row :gutter="20" class="action-row">
 <el-col :span="12">
@@ -122,7 +173,6 @@
        <p>注:以上内容均为用户自行输入,第三方大模型作答,所有产生内容均不代表本团队观点</p>
        </div>
   </el-card>
-  <div ref="chart" style="width: 600px; height: 400px;"></div>
 </el-col>
 </el-row>
 
@@ -136,13 +186,14 @@
 
 <script setup lang="ts">
 import axios from 'axios';
-import { ref, computed, nextTick, onMounted, watchEffect } from 'vue';
+import { ref, computed, nextTick, onMounted, watchEffect,watch} from 'vue';
 import { ElMessage } from 'element-plus';
 import { pap_store } from './PAP';
 import { rag_store } from './PoisonedRAG';
 import * as echarts from 'echarts';
 const selectedAB = ref<string | null>(null);
 const selected = ref<string | null>(null);
+const chart = ref<HTMLDivElement | null>(null);
 //开头文字
 const message = ref('欢迎来到VCIS红队攻击平台！在这里将展示各种红队攻击案例，您将直观的感受到各种红队攻击算法的差别，并让您亲自体验我们团队的红队攻击算法。体验红队攻击如何助力大模型伦理安全');
 // 定义状态
@@ -162,6 +213,64 @@ const responseText = ref('');
 const scoreText=ref('');
 // 标志变量
 const isOptimized = ref(true);
+
+
+const initChart = () => {
+  if (chart.value) {
+    const myChart = echarts.init(chart.value);
+    
+    const option = {
+      backgroundColor: '#2d4f98',
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      legend: {
+        data: ['原始成功率', '攻击成功率'],
+        textStyle: {
+          color: '#ffffff'
+        }
+      },
+      xAxis: {
+        type: 'category',
+        data: tableData.value.map(item => item.model),
+        axisLabel: {
+          color: '#ffffff'
+        }
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          color: '#ffffff',
+          formatter: '{value}'
+        },
+        max: 100
+      },
+      series: [
+        {
+          name: '原始成功率',
+          type: 'bar',
+          data: tableData.value.map(item => parseFloat(selectedAB.value === 'PRAG' ? item.OASR : item.OASR2)),
+          itemStyle: {
+            color: '#8884d8'
+          }
+        },
+        {
+          name: '攻击成功率',
+          type: 'bar',
+          data: tableData.value.map(item => parseFloat(selectedAB.value === 'PRAG' ? item.ASR : item.ASR2)),
+          itemStyle: {
+            color: '#82ca9d'
+          }
+        }
+      ]
+    };
+    
+    myChart.setOption(option);
+  }
+};
 //提交Prompt正常返回
 const submitPrompt = async () => {
   try {
@@ -361,48 +470,12 @@ const tableData = ref([
 ]);
 
 // 初始化和更新ECharts图表
-const chart = ref<HTMLDivElement | null>(null);
-
-const initChart = () => {
-  if (chart.value) {
-    const myChart = echarts.init(chart.value);
-    const option = {
-      tooltip: {},
-      legend: {
-        data: ['OASR', 'ASR', 'OASR2', 'ASR2']
-      },
-      xAxis: {
-        type: 'category',
-        data: tableData.value.map(item => item.model)
-      },
-      yAxis: {},
-      series: [
-        {
-          name: 'OASR',
-          type: 'bar',
-          data: tableData.value.map(item => parseFloat(item.OASR))
-        },
-        {
-          name: 'ASR',
-          type: 'bar',
-          data: tableData.value.map(item => parseFloat(item.ASR))
-        },
-        {
-          name: 'OASR2',
-          type: 'bar',
-          data: tableData.value.map(item => parseFloat(item.OASR2))
-        },
-        {
-          name: 'ASR2',
-          type: 'bar',
-          data: tableData.value.map(item => parseFloat(item.ASR2))
-        }
-      ]
-    };
-    myChart.setOption(option);
-  }
-};
-
+// Add this after your existing watchEffect
+watch(selectedAB, () => {
+  nextTick(() => {
+    initChart();
+  });
+});
 
 </script>
 
@@ -446,6 +519,49 @@ z-index: 1; /* 确保文字在水印图片上方 */
 background-repeat: no-repeat; /* 阻止背景图像在容器内重复 */
 }
 
+.method-cards {
+  margin-bottom: 30px;
+}
+
+.method-card {
+  height: 100%;
+  background-color: #2d4f98;
+  color: #ffffff;
+}
+
+.method-card h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #ffffff;
+}
+
+.success-rates {
+  margin: 15px 0;
+}
+
+.rate-item {
+  margin: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  color: #ffffff;
+}
+
+.method-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #ffffff;
+  margin-top: 15px;
+}
+
+
+.table-card {
+  background-color: #1e3a8a;
+  color: #ffffff;
+}
+
+.card-header-text {
+  color: #ffffff;
+}
 
 .title {
 color: #ffffff; /* 深蓝色 */
@@ -629,5 +745,33 @@ margin-top: 20px;
 }
 .footer{
   color: #fcfcfe;
+}
+.model-stats {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.model-name {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #ffd700;
+}
+
+.rate-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rate-item span {
+  font-size: 14px;
+}
+
+.chart-container {
+  height: 400px;
+  margin-top: 30px;
+  padding: 20px;
 }
 </style>

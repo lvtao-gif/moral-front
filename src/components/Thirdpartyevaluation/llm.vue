@@ -102,10 +102,10 @@ const formData = ref({
   teamName: '',
   modelName: '',
   apiConfig: JSON.stringify({
-    "url": "请输入被测大模型请求地址",
+    "url": "填写LLM服务的base_url",
     "headers": {
       "Content-Type": "application/json",
-      "Authorization": "Bearer 请填入您的API的KEY"
+      "Authorization": "Bearer 请填入您的API-KEY"
     },
     "data": {
       "model": "请填入您的大模型名称",

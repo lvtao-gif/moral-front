@@ -12,35 +12,44 @@
           <h2>我的数据集</h2>
           <div class="header-line"></div>
         </div>
-        <el-table 
-          :data="datasets" 
-          border 
-          style="width: 100%" 
-          @selection-change="handleDatasetSelectionChange"
-          class="custom-table"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="id" label="数据集ID" min-width="200" />
-          <el-table-column prop="name" label="数据集名称" min-width="200" />
-          <el-table-column label="操作" min-width="200">
-            <template #default="scope">
-              <div class="button-group">
-                <el-button 
-                  @click="deleteDataset(scope.$index, datasets)" 
-                  type="danger" 
-                  plain
-                  :icon="Delete"
-                >删除</el-button>
-                <el-button 
-                  @click="queryDataset(scope.row)" 
-                  type="primary" 
-                  plain
-                  :icon="View"
-                >查看详情</el-button>
-              </div>
+        <el-collapse>
+          <el-collapse-item>
+            <template #title>
+              <span class="collapse-title">数据集列表</span>
+              <span class="collapse-subtitle">共 {{datasets.length}} 条记录</span>
             </template>
-          </el-table-column>
-        </el-table>
+            <el-table 
+              :data="datasets" 
+              border 
+              style="width: 100%" 
+              @selection-change="handleDatasetSelectionChange"
+              class="custom-table"
+              :max-height="400"
+            >
+              <el-table-column type="selection" width="55" />
+              <el-table-column prop="id" label="数据集ID" min-width="200" />
+              <el-table-column prop="name" label="数据集名称" min-width="200" />
+              <el-table-column label="操作" min-width="200">
+                <template #default="scope">
+                  <div class="button-group">
+                    <el-button 
+                      @click="deleteDataset(scope.$index, datasets)" 
+                      type="danger" 
+                      plain
+                      :icon="Delete"
+                    >删除</el-button>
+                    <el-button 
+                      @click="queryDataset(scope.row)" 
+                      type="primary" 
+                      plain
+                      :icon="View"
+                    >查看详情</el-button>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-collapse-item>
+        </el-collapse>
       </div>
 
       <!-- 模型部分 -->
@@ -49,45 +58,54 @@
           <h2>我的大模型</h2>
           <div class="header-line"></div>
         </div>
-        <el-table 
-          :data="models" 
-          border 
-          style="width: 100%" 
-          @selection-change="handleModelSelectionChange"
-          class="custom-table"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="id" label="大模型ID" min-width="200" />
-          <el-table-column prop="name" label="大模型名称" min-width="200" />
-          <el-table-column label="操作" min-width="200">
-            <template #default="scope">
-              <div class="button-group">
-                <el-button 
-                  @click="deleteModel(scope.$index, models)" 
-                  type="danger" 
-                  plain
-                  :icon="Delete"
-                >删除</el-button>
-                <el-button 
-                  @click="queryModel(scope.row)" 
-                  type="primary" 
-                  plain
-                  :icon="View"
-                >查看详情</el-button>
-              </div>
+        <el-collapse>
+          <el-collapse-item>
+            <template #title>
+              <span class="collapse-title">模型列表</span>
+              <span class="collapse-subtitle">共 {{models.length}} 条记录</span>
             </template>
-          </el-table-column>
-        </el-table>
+            <el-table 
+              :data="models" 
+              border 
+              style="width: 100%" 
+              @selection-change="handleModelSelectionChange"
+              class="custom-table"
+              :max-height="400"
+            >
+              <el-table-column type="selection" width="55" />
+              <el-table-column prop="id" label="大模型ID" min-width="200" />
+              <el-table-column prop="name" label="大模型名称" min-width="200" />
+              <el-table-column label="操作" min-width="200">
+                <template #default="scope">
+                  <div class="button-group">
+                    <el-button 
+                      @click="deleteModel(scope.$index, models)" 
+                      type="danger" 
+                      plain
+                      :icon="Delete"
+                    >删除</el-button>
+                    <el-button 
+                      @click="queryModel(scope.row)" 
+                      type="primary" 
+                      plain
+                      :icon="View"
+                    >查看详情</el-button>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-collapse-item>
+        </el-collapse>
       </div>
 
       <!-- 操作按钮 -->
       <div class="action-buttons">
-        <el-button 
-          type="primary" 
-          class="action-button" 
-          @click="openPublishDialog"
-          :icon="Send"
-        >发布任务</el-button>
+      <el-button 
+            type="primary" 
+            class="action-button" 
+            @click="openPublishDialog"
+            :icon="Position"
+          >发布任务</el-button>
         <el-button 
           type="success" 
           class="action-button" 
@@ -169,40 +187,87 @@ import { defineComponent, ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { Delete, View, Document, Position, ArrowRight } from '@element-plus/icons-vue';
+
+interface Dataset {
+  id: string;
+  name: string;
+}
+
+interface Model {
+  id: string;
+  name: string;
+}
+
+interface DatasetResponse {
+  datasetId: string;
+  datasetName: string;
+  questionCount: number;
+}
+
+interface ModelResponse {
+  modelId: string;
+  modelName: string;
+  modelConfig: any;
+}
 
 export default defineComponent({
   name: 'PublishTask',
+  components: {
+    Delete,
+    View,
+    Document,
+    ArrowRight,
+    Position
+  },
+
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const loading = ref(false);
     const activeMenu = ref(route.path.substring(1) || 'task');
-    const datasets = ref([]);
-    const models = ref([]);
-    const selectedDataset = ref(null);
-    const selectedModel = ref(null);
+    const datasets = ref<Dataset[]>([]);
+    const models = ref<Model[]>([]);
+    const selectedDataset = ref<Dataset | null>(null);
+    const selectedModel = ref<Model | null>(null);
     const dialogVisible = ref(false);
     const taskName = ref('');
-    const userJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTI4OTE4NzF9.6OFjQ62TRDJbW4fdGvuhm3lKazws_iUUGrVKInPDMt8'; // Replace with actual JWT
+    const userJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTI4OTE4NzF9.6OFjQ62TRDJbW4fdGvuhm3lKazws_iUUGrVKInPDMt8';
     const currentPageTitle = ref('发布任务');
     const modelDialogVisible = ref(false);
-    const modelData = ref([]);
-    const datasetDialogVisible = ref(false)
-    const datasetData = ref([]);
+    const modelData = ref<ModelResponse[]>([]);
+    const datasetDialogVisible = ref(false);
+    const datasetData = ref<DatasetResponse[]>([]);
+    const defaultActiveNames = ref(['1', '2']); // 默认展开所有面板
 
-    onMounted(async () => {
+    // 获取数据的方法
+    const fetchData = async () => {
+      loading.value = true;
       try {
         const response = await axios.get('http://10.110.147.246:5004/evaluation/choose', {
           params: {
             userJwt: userJwt
           }
         }); 
-        const { data } = response.data;
-        datasets.value = data.dataset;
-        models.value = data.model;
+        if (response.data && response.data.data) {
+          datasets.value = response.data.data.dataset || [];
+          models.value = response.data.data.model || [];
+        } else {
+          datasets.value = [];
+          models.value = [];
+        }
       } catch (error) {
         console.error('Failed to fetch data:', error);
         ElMessage.error('获取数据失败，请重试');
+        datasets.value = [];
+        models.value = [];
+      } finally {
+        loading.value = false;
       }
+    };
+
+    onMounted(() => {
+      fetchData();
     });
 
     const handleSelect = (key: string) => {
@@ -210,11 +275,11 @@ export default defineComponent({
       router.push(`/${key}`);
     };
 
-    const handleDatasetSelectionChange = (selection) => {
+    const handleDatasetSelectionChange = (selection: Dataset[]) => {
       selectedDataset.value = selection.length > 0 ? selection[0] : null;
     };
 
-    const handleModelSelectionChange = (selection) => {
+    const handleModelSelectionChange = (selection: Model[]) => {
       selectedModel.value = selection.length > 0 ? selection[0] : null;
     };
 
@@ -232,6 +297,11 @@ export default defineComponent({
         return;
       }
 
+      if (!selectedDataset.value || !selectedModel.value) {
+        ElMessage.error('请选择数据集和模型');
+        return;
+      }
+
       const taskData = {
         taskName: taskName.value,
         datasetId: selectedDataset.value.id,
@@ -241,9 +311,18 @@ export default defineComponent({
 
       try {
         const response = await axios.post('http://10.110.147.246:5004/evaluation/task/add', taskData);
-        console.log('Task published:', response.data);
-        ElMessage.success('任务发布成功');
-        dialogVisible.value = false;
+        if (response.data.status==0) {
+          ElMessage({
+                message: '任务发布成功',
+                type: 'success',
+              })
+          dialogVisible.value = false;
+          taskName.value = ''; // 清空任务名称
+          // 可选：刷新数据
+          await fetchData();
+        } else {
+          ElMessage.error(response.data.message || '任务发布失败');
+        }
       } catch (error) {
         console.error('Failed to publish task:', error);
         ElMessage.error('任务发布失败，请重试');
@@ -254,7 +333,7 @@ export default defineComponent({
       router.push('/test/taskmanger');
     };
 
-    const deleteDataset = async (index: number, list: any[]) => {
+    const deleteDataset = async (index: number, list: Dataset[]) => {
       const datasetId = list[index].id;
       try {
         const response = await axios.post('http://10.110.147.246:5004/generate-dataset/delete', {
@@ -265,6 +344,10 @@ export default defineComponent({
         if (response.data.success) {
           list.splice(index, 1);
           ElMessage.success('数据集删除成功');
+          // 如果删除的是当前选中的数据集，清空选择
+          if (selectedDataset.value && selectedDataset.value.id === datasetId) {
+            selectedDataset.value = null;
+          }
         } else {
           ElMessage.error(response.data.message || '删除失败，请重试');
         }
@@ -274,27 +357,27 @@ export default defineComponent({
       }
     };
 
-    const queryDataset = async (row: any) => {
+    const queryDataset = async (row: Dataset) => {
       try {
         const response = await axios.get('http://10.110.147.246:5004/generate-dataset/query', {
           params: {
             userJwt: userJwt
           }
-        })
+        });
         
         if (response.data.code === 0) {
-          datasetData.value = response.data.data || []
-          datasetDialogVisible.value = true
+          datasetData.value = response.data.data || [];
+          datasetDialogVisible.value = true;
         } else {
-          ElMessage.error(response.data.message || '查询失败，请重试')
+          ElMessage.error(response.data.message || '查询失败，请重试');
         }
       } catch (error) {
-        console.error('查询数据集时出错:', error)
-        ElMessage.error('查询失败，请重试')
+        console.error('查询数据集时出错:', error);
+        ElMessage.error('查询失败，请重试');
       }
-    }
+    };
 
-    const deleteModel = async (index: number, list: any[]) => {
+    const deleteModel = async (index: number, list: Model[]) => {
       const modelId = list[index].id;
       try {
         const response = await axios.post('http://10.110.147.246:5004/model/delete', {
@@ -305,6 +388,10 @@ export default defineComponent({
         if (response.data.success) {
           list.splice(index, 1);
           ElMessage.success('模型删除成功');
+          // 如果删除的是当前选中的模型，清空选择
+          if (selectedModel.value && selectedModel.value.id === modelId) {
+            selectedModel.value = null;
+          }
         } else {
           ElMessage.error(response.data.message || '删除失败，请重试');
         }
@@ -314,25 +401,25 @@ export default defineComponent({
       }
     };
 
-    const queryModel = async (row: any) => {
+    const queryModel = async (row: Model) => {
       try {
         const response = await axios.get('http://10.110.147.246:5004/model/query', {
           params: {
             userJwt: userJwt
           }
-        })
+        });
         
         if (response.data.code === 0) {
-          modelData.value = response.data.data
-          modelDialogVisible.value = true
+          modelData.value = response.data.data;
+          modelDialogVisible.value = true;
         } else {
-          ElMessage.error(response.data.message || '查询失败，请重试')
+          ElMessage.error(response.data.message || '查询失败，请重试');
         }
       } catch (error) {
-        console.error('查询模型时出错:', error)
-        ElMessage.error('查询失败，请重试')
+        console.error('查询模型时出错:', error);
+        ElMessage.error('查询失败，请重试');
       }
-    }
+    };
 
     return {
       activeMenu,
@@ -341,6 +428,14 @@ export default defineComponent({
       models,
       dialogVisible,
       taskName,
+      selectedDataset,
+      selectedModel,
+      modelDialogVisible,
+      datasetDialogVisible,
+      datasetData,
+      modelData,
+      defaultActiveNames,
+      loading,
       handleSelect,
       handleDatasetSelectionChange,
       handleModelSelectionChange,
@@ -351,10 +446,10 @@ export default defineComponent({
       queryDataset,
       deleteModel,
       queryModel,
-      modelDialogVisible,
-      datasetDialogVisible,
-      datasetData,
-      modelData
+      Delete,
+      View,
+      Document,
+      ArrowRight
     };
   }
 });
@@ -431,14 +526,24 @@ export default defineComponent({
   overflow: hidden;
 }
 
+:deep(.el-table) {
+  --el-table-header-bg-color: #f8fafc;
+  --el-table-row-hover-bg-color: #f5f7fa;
+}
+
 :deep(.el-table th) {
-  background-color: #f8fafc;
+  background-color: var(--el-table-header-bg-color);
   color: #2c3e50;
   font-weight: 600;
+  padding: 12px 0;
 }
 
 :deep(.el-table td) {
   padding: 16px 0;
+}
+
+:deep(.el-table--border) {
+  border-radius: 8px;
 }
 
 .button-group {
@@ -457,7 +562,6 @@ export default defineComponent({
 .action-button {
   padding: 12px 24px;
   font-size: 16px;
-
 }
 
 .custom-dialog {
@@ -469,19 +573,57 @@ export default defineComponent({
   padding: 20px;
   margin: 0;
   background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 :deep(.el-dialog__body) {
   padding: 24px;
 }
 
+:deep(.el-dialog__footer) {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
 :deep(.el-input__wrapper) {
   padding: 8px 12px;
+}
+
+:deep(.el-collapse) {
+  border: none;
 }
 
 :deep(.el-collapse-item__header) {
   font-size: 16px;
   font-weight: 500;
+  background-color: #f8fafc;
+  padding: 12px 20px;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid #e5e7eb;
+  margin-bottom: -1px;
+}
+
+:deep(.el-collapse-item__content) {
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0 0 8px 8px;
+}
+
+:deep(.el-collapse-item__arrow) {
+  margin-right: 8px;
+}
+
+.collapse-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2c3e50;
+  margin-right: 12px;
+}
+
+.collapse-subtitle {
+  font-size: 14px;
+  color: #606266;
 }
 
 :deep(.el-descriptions__label) {
@@ -495,18 +637,94 @@ pre {
   font-family: 'Monaco', monospace;
   font-size: 14px;
   color: #2c3e50;
+  margin: 0;
+  overflow-x: auto;
 }
 
-/* 添加渐变动画效果 */
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
+/* 滚动条美化 */
+:deep(.el-table__body-wrapper::-webkit-scrollbar) {
+  width: 6px;
+  height: 6px;
+}
+
+:deep(.el-table__body-wrapper::-webkit-scrollbar-thumb) {
+  border-radius: 3px;
+  background: #c0c4cc;
+}
+
+:deep(.el-table__body-wrapper::-webkit-scrollbar-track) {
+  border-radius: 3px;
+  background: #f5f7fa;
+}
+
+/* 折叠动画 */
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* 按钮悬停效果 */
+:deep(.el-button) {
+  transition: all 0.3s ease;
+}
+
+:deep(.el-button:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 空状态样式 */
+:deep(.el-empty) {
+  padding: 40px 0;
+}
+
+:deep(.el-empty__description) {
+  margin-top: 16px;
+  color: #606266;
+}
+
+/* 加载状态样式 */
+:deep(.el-loading-mask) {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+:deep(.el-loading-spinner) {
+  .circular {
+    width: 42px;
+    height: 42px;
   }
-  50% {
-    background-position: 100% 50%;
+}
+
+
+/* 响应式调整 */
+@media (max-width: 1520px) {
+  .main-content {
+    width: 100%;
+    padding: 0 20px;
   }
-  100% {
-    background-position: 0% 50%;
+}
+
+@media (max-width: 768px) {
+  .task-container {
+    padding: 20px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-button {
+    width: 100%;
   }
 }
 </style>

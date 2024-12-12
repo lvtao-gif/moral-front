@@ -1,6 +1,6 @@
 <template>
   <div class="dataset-container">
-    <h2 class="page-title">选择数据集方式</h2>
+    <h2 class="page-title">选择数据集</h2>
     <div class="cards-container">
       <!-- 勾选系统数据集卡片 -->
       <div class="selection-card" @click="openSystemDialog">
@@ -13,9 +13,9 @@
         </div>
         <div class="card-content">
           <ul class="feature-list">
-            <li>支持多分类选择</li>
-            <li>可配置标准题数和高级攻击题数</li>
+            <li>支持伦理数据和安全数据集选择</li>
             <li>系统预置分类体系</li>
+            <li>可配置数据集维度和题目数量</li>
           </ul>
         </div>
       </div>
@@ -31,9 +31,9 @@
         </div>
         <div class="card-content">
           <ul class="feature-list">
-            <li>支持CSV、Excel、JSON格式</li>
+            <li>仅支持JSON格式</li>
             <li>文件大小限制10MB</li>
-            <li>自定义数据结构</li>
+           
           </ul>
         </div>
       </div>
@@ -51,8 +51,8 @@
           <div class="category-cell"></div>
           <div class="category-cell">一级分类</div>
           <div class="category-cell">二级分类</div>
-          <div class="count-cell">标准题数</div>
-          <div class="count-cell">高级攻击题数</div>
+          <div class="category-cell">标准题数</div>
+          <!--<div class="count-cell">高级攻击题数</div>-->
         </div>
       </div>
       <el-form class="dataset-form" :model="datasetParams">
@@ -89,7 +89,7 @@
                 controls-position="right"
               />
             </div>
-            <div class="count-inputs">
+            <!--<div class="count-inputs">
               <el-input-number 
                 v-model="category.advanced_attack_count"
                 :min="0"
@@ -97,7 +97,7 @@
                 size="small"
                 controls-position="right"
               />
-            </div>
+            </div>-->
           </div>
         </div>
       </el-form>
@@ -110,7 +110,7 @@
         <div class="dialog-footer">
           <el-button @click="systemDialogVisible = false">取 消</el-button>
           <el-button type="success" @click="openNameDialog">保存数据集</el-button>
-          <el-button type="primary" @click="handleSystemConfirm">确定</el-button>
+          <!--<el-button type="primary" @click="handleSystemConfirm">确定</el-button>-->
         </div>
       </template>
     </el-dialog>
@@ -132,39 +132,61 @@
 
     <!-- 上传数据集对话框 -->
     <el-dialog
-      title="上传数据集"
-      v-model="uploadDialogVisible"
-      width="40%"
+  title="上传数据集"
+  v-model="uploadDialogVisible"
+  width="700px"
+  center
+  destroy-on-close
+  :close-on-click-modal="false"
+  class="upload-dialog"
+>
+  <div class="upload-container">
+    <el-upload
+      class="upload-demo"
+      drag
+      action="http://10.110.147.246:5004/upload-dataset"
+      :headers="uploadHeaders"
+      :on-success="handleUploadSuccess"
+      :on-error="handleUploadError"
+      :before-upload="beforeUpload"
+      :limit="1"
+      accept=".csv,.xlsx,.json"
     >
-      <div class="upload-container">
-        <el-upload
-          class="upload-demo"
-          drag
-          action="http://10.110.147.246:5004/upload-dataset"
-          :headers="uploadHeaders"
-          :on-success="handleUploadSuccess"
-          :on-error="handleUploadError"
-          :before-upload="beforeUpload"
-          accept=".csv,.xlsx,.json"
-        >
-          <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-          <div class="el-upload__text">
+      <template #trigger>
+        <div class="upload-trigger">
+          <el-icon class="upload-icon"><upload-filled /></el-icon>
+          <div class="upload-text">
             拖拽文件到此处或 <em>点击上传</em>
           </div>
-          <template #tip>
-            <div class="el-upload__tip">
-              支持的文件格式：CSV、Excel、JSON（文件大小不超过10MB）
-            </div>
-          </template>
-        </el-upload>
-      </div>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="uploadDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleUploadSubmit">确定</el-button>
-        </span>
+        </div>
       </template>
-    </el-dialog>
+
+      <template #tip>
+        <div class="upload-info">
+          <div class="format-text">
+            支持的文件格式：JSON（文件大小不超过10MB）
+          </div>
+          <el-button
+            link
+            type="primary"
+            class="download-btn"
+            @click="downloadTemplate"
+          >
+            <el-icon class="download-icon"><download /></el-icon>
+            下载示例格式
+          </el-button>
+        </div>
+      </template>
+    </el-upload>
+  </div>
+
+  <template #footer>
+    <div class="dialog-footer">
+      <el-button @click="uploadDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="handleUploadSubmit">确定</el-button>
+    </div>
+  </template>
+</el-dialog>
   </div>
 </template>
 
@@ -243,7 +265,7 @@ export default defineComponent({
           ]
         },
         {
-          name: "A4 商业违法违规",
+          name: "A4 侵犯他人合法权益",
           selected: false,
           standard_count: 0,
           advanced_attack_count: 0,
@@ -433,7 +455,16 @@ export default defineComponent({
         console.error('Error:', error);
         ElMessage.error(error.response?.data?.message || '上传失败，请重试');
       }
-    };
+    }; 
+    const downloadTemplate = () => {
+      const url = 'http://192.144.141.249:52300/generation/数据集格式示例.jsonl'
+    const params = new URLSearchParams({
+      AWSAccessKeyId: 'dmeinbi',
+      Signature: 'jrJkrT+Ttav/vjieYta/r+Yudhc=',
+      Expires: '4844131899'
+    })
+        window.open(`${url}?${params.toString()}`)
+      }
 
     return {
       systemDialogVisible,
@@ -446,6 +477,7 @@ export default defineComponent({
       selectedCount,
       totalCount,
       openSystemDialog,
+      downloadTemplate,
       handleSystemConfirm,
       handleMainCategoryChange,
       handleSubCategoryChange,
@@ -591,6 +623,9 @@ export default defineComponent({
 .count-cell, .count-inputs {
   text-align: center;
 }
+.count-inputs .el-input-number {
+  width: 120px; /* 根据需要调整宽度 */
+}
 
 .category-section {
   &.alt-background {
@@ -614,7 +649,7 @@ export default defineComponent({
 
 /* Element Plus 组件深度选择器样式 */
 :deep(.el-input-number) {
-  width: 120px;
+  width: 20px;
 }
 
 :deep(.el-checkbox) {
@@ -639,6 +674,7 @@ export default defineComponent({
 /* 上传对话框样式 */
 .upload-container {
   padding: 20px;
+  width: auto;
 }
 
 :deep(.el-upload) {
@@ -675,7 +711,131 @@ export default defineComponent({
     font-style: normal;
   }
 }
+.upload-dialog :deep(.el-dialog) {
+  border-radius: 12px;
+  overflow: hidden;
+}
 
+.upload-dialog :deep(.el-dialog__header) {
+  margin: 0;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.upload-dialog :deep(.el-dialog__title) {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.upload-dialog :deep(.el-dialog__body) {
+  padding: 24px;
+}
+
+.upload-dialog :deep(.el-dialog__footer) {
+  padding: 16px 24px;
+  border-top: 1px solid var(--el-border-color-lighter);
+  background-color: var(--el-fill-color-lighter);
+}
+
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-demo {
+  width: 100%;
+}
+
+.upload-demo :deep(.el-upload-dragger) {
+  width: 100%;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--el-border-color);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background-color: var(--el-fill-color-lighter);
+}
+
+.upload-demo :deep(.el-upload-dragger:hover) {
+  border-color: var(--el-color-primary);
+  background-color: var(--el-color-primary-light-9);
+}
+
+.upload-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.upload-icon {
+  font-size: 48px;
+  color: var(--el-color-info-light-3);
+  transition: all 0.3s ease;
+}
+
+.el-upload-dragger:hover .upload-icon {
+  color: var(--el-color-primary);
+}
+
+.upload-text {
+  font-size: 16px;
+  color: var(--el-text-color-regular);
+}
+
+.upload-text em {
+  color: var(--el-color-primary);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.upload-info {
+  margin-top: 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.format-text {
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+  background-color: var(--el-color-primary-light-9);
+}
+
+.download-icon {
+  font-size: 16px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.dialog-footer .el-button {
+  min-width: 90px;
+  padding: 8px 20px;
+}
 /* 响应式布局 */
 @media (max-width: 1400px) {
   .category-row {

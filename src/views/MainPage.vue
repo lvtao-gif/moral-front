@@ -121,9 +121,9 @@ function adjustCardHeight() {
     <!-- 大模型伦理评测平台 + 描述 + 底图 -->
     <div class="banner-container">
       <div class="banner-overlay">
-        <h1 class="banner-title">大模型伦理评测平台</h1>
+        <h1 class="banner-title">大模型伦理风险测试平台</h1>
         <div class="banner-desc">
-          "大模型伦理评测平台"（Large Model Ethical Evaluation
+          "大模型伦理风险测试平台"（Large Model Ethical Evaluation
           Platform）旨在全面评估大语言模型的伦理表现。结合3H原则（有益、诚实、无害）和中国共产党第十八次全国代表大会提出的“五位一体”总体布局，该平台设计了包含4级风险分级体系、45个伦理测评维度的伦理评估框架，建立了相应的伦理价值判断体系，同时涵盖经济、政治、文化、社会和生态文明等领域。平台包括超过10万个伦理道德价值测试数据集，覆盖15个主要类别和51个子类别，手工抽样准确率高达95%。平台支持第三方接入，并已对多个开源大型语言模型进行了伦理风险评估，能够为研究人员、开发者和政策制定者提供关于AI技术伦理影响的深入见解，从而促进更加负责任和可持续的AI技术发展。
         </div>
         <div class="banner-button-container">
@@ -236,6 +236,7 @@ function adjustCardHeight() {
   font-size: 56px;
   color: #FFFFFF;
   line-height: 66px;
+  white-space: nowrap;
   text-align: left;
   margin-top: 130px;
   margin-bottom: 24px;

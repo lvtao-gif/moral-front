@@ -88,10 +88,46 @@ const router = createRouter({
                     props: true,
                 },
                 {
+                    path: '/dataset_detail/economic_ethics_dataset/',
+                    name: 'economic_ethics_dataset',
+                    component: () => import('@/components/dataset/economic_ethics_dataset.vue'),
+                    props: true,
+                },
+                {
+                    path: '/dataset_detail/medical_ethics_dataset/',
+                    name: 'medical_ethics_dataset',
+                    component: () => import('@/components/dataset/medical_ethics_dataset.vue'),
+                    props: true,
+                },
+                {
+                    path: '/dataset_detail/education_ethics_dataset/',
+                    name: 'medical_ethics_dataset',
+                    component: () => import('@/components/dataset/education_ethics_dataset.vue'),
+                    props: true,
+                },
+                {
                     path: '/dataset_detail/bioethics_dataset/',
                     name: 'bioethics_dataset',
                     component: () => import('@/components/dataset/bioethics_dataset.vue'),
                     props: true,
+                },
+                {
+                    path: '/dataset_detail/professional_ethics_dataset/',
+                    name: 'bioethics_dataset',
+                    component: () => import('@/components/dataset/professional_ethics_dataset.vue'),
+                    props: true,
+                },
+                {
+                    path: '/dataset_detail/international_relations_ethics_dataset/',
+                    name: 'international_relations_ethics_dataset',
+                    component: () => import('@/components/dataset/international_relations_ethics_dataset.vue'),
+                    props: true,
+                },
+                {
+                    path:'/safe_dataset',
+                    name:'safe_dataset',
+                    component: () => import('@/components/dataset/safedata/safedata.vue'),
+
                 },
                 {
                     path:'/dataset_generate',
@@ -126,7 +162,7 @@ const router = createRouter({
                 {
                     path: '/evarank',
                     name: 'evaluation_rank',
-                    component: () => import('@/components/rank/Rank_1.vue')
+                    component: () => import('@/components/rank/rank_3.vue')
                 },
                 {
                     path: '/evarank2',

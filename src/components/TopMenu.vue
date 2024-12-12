@@ -14,34 +14,36 @@ const activeMenu = ref('/');
 
       <div class="menu-item-container-right">
         <el-menu-item index="/" class="menu-text">首页</el-menu-item>
-        <el-menu-item index="/model_list" class="menu-text">模型</el-menu-item>
+        <!-- <el-menu-item index="/model_list" class="menu-text">模型</el-menu-item>-->
         <!-- <el-menu-item index="/dataset_list" class="menu-text">数据集</el-menu-item> -->
         <el-sub-menu index="3">
           <template #title><span class="menu-text">数据集</span></template>
-          <el-menu-item index="/dataset_list" class="sub-menu-item">概览</el-menu-item>
-          <el-menu-item index="/dataset_generate" class="sub-menu-item">生成</el-menu-item>
+          <el-menu-item index="/dataset_list" class="sub-menu-item">伦理数据集</el-menu-item>
+          <!--<el-menu-item index="/dataset_generate" class="sub-menu-item">生成</el-menu-item>-->
+          <!--<el-menu-item index="/dataset_generate" class="sub-menu-item">数据集生成</el-menu-item>-->
+          <el-menu-item index="/safe_dataset" class="sub-menu-item">安全数据集</el-menu-item>
         </el-sub-menu>
 
-        <el-sub-menu index="4">
+        <!--<el-sub-menu index="4">
           <template #title><span class="menu-text">评测</span></template>
           <el-menu-item index="/evatask" class="sub-menu-item">发起评测</el-menu-item>
           
-          <el-menu-item index="/rank_list" class="sub-menu-item">评测结果</el-menu-item>
+          <el-menu-item index="/rank_list" class="sub-menu-item">评测结果</el-menu-item>-->
           <!--        <el-sub-menu index="3-4">-->
           <!--          <template #title>item four</template>-->
           <!--          <el-menu-item index="3-4-1">item one</el-menu-item>-->
           <!--          <el-menu-item index="3-4-2">item two</el-menu-item>-->
           <!--          <el-menu-item index="3-4-3">item three</el-menu-item>-->
           <!--        </el-sub-menu>-->
-        </el-sub-menu>
+        <!-- </el-sub-menu>-->
         <el-sub-menu index="5">
           <template #title><span class="menu-text">排行榜</span></template>
-        <el-menu-item index="/evarank" class="sub-menu-item">大模型伦理维度测试排行榜</el-menu-item>
-        <el-menu-item index="/evarank2" class="sub-menu-item">大模型生成内容测评榜单</el-menu-item>
+        <el-menu-item index="/evarank" class="sub-menu-item">大模型伦理测评排行榜</el-menu-item>
+        <el-menu-item index="/evarank2" class="sub-menu-item">大模型安全测评排行榜</el-menu-item>
         </el-sub-menu>
         <el-menu-item index="/lgtmain" class="menu-text"> 大模型生成内容测试平台</el-menu-item>
         <el-menu-item index="/redteammain" class="menu-text"> 红队攻击平台</el-menu-item>
-        <el-menu-item index="/test" class="menu-text"> test</el-menu-item>
+        <!--<el-menu-item index="/test" class="menu-text"> test</el-menu-item>-->
       </div>
     </el-menu>
 
