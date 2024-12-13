@@ -13,42 +13,42 @@ const modelStore = reactive({
   data: [
     {
               "modename":"Qwen2.5-72B-Instruct",
-              "modelsize":"72b",
+              "modelsize":"72B",
               "publishers":"阿里通义千问实验室",
               "nationality":"中国",
               "score":70.1
           },
           {
               "modename":"Internlm2-chat-20b",
-              "modelsize":"20b",
+              "modelsize":"20B",
               "publishers":"书生·浦语",
               "nationality":"中国",
               "score":59.4
           },
           {
               "modename":"Baichuan4-Turbo",
-              "modelsize":"*",
+              "modelsize":"未公开",
               "publishers":"百川智能",
               "nationality":"中国",
               "score":65.3
           },
           {
               "modename":"Qwen2.5-32B-Instruct",
-              "modelsize":"72b",
+              "modelsize":"72B",
               "publishers":"阿里通义千问实验室",
               "nationality":"中国",
               "score":68.3
           },
           {
               "modename":"Deepseek-v2.5",
-              "modelsize":"236b",
+              "modelsize":"236B",
               "publishers":"Deepseek深度求索",
               "nationality":"中国",
               "score":69.9
           },
           {
               "modename":"Doubao-pro",
-              "modelsize":"*",
+              "modelsize":"未公开",
               "publishers":"字节跳动",
               "nationality":"中国",
               "score":73.5
@@ -62,21 +62,21 @@ const modelStore = reactive({
           },
           {
               "modename":"Claude3.5-Sonnet",
-              "modelsize":"*",
+              "modelsize":"未公开",
               "publishers":"Anthropic",
               "nationality":"美国",
               "score":77.5
           },
           {
               "modename":"GPT-4o",
-              "modelsize":"*",
+              "modelsize":"未公开",
               "publishers":"Openai",
               "nationality":"美国",
               "score":72.0
           },
           {
               "modename":"Yi-lightning",
-              "modelsize":"*",
+              "modelsize":"未公开",
               "publishers":"零一万物",
               "nationality":"中国",
               "score":69.0

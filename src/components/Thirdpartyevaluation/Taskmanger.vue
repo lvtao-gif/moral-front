@@ -1,21 +1,22 @@
 <template>
-  <div class="task-management">
+  <div 
+    class="task-management"
+    v-loading.fullscreen.lock="isLoading"
+    element-loading-text="数据刷新中..."
+    element-loading-background="rgba(255, 255, 255, 0.8)"
+  >
     <!-- 页面标题区域 -->
     <div class="page-header">
       <div class="header-content">
         <div class="title-section">
           <h1>任务管理中心</h1>
-          <div class="title-decoration">
-            <div class="line"></div>
-            <div class="dot"></div>
-            <div class="line"></div>
-          </div>
+          <div class="title-line"></div>
         </div>
         <div class="header-actions">
           <el-button 
             type="primary" 
             class="refresh-button" 
-            @click="inquire"
+            @click="handleRefresh"
             :icon="Refresh"
           >
             刷新数据
@@ -128,6 +129,7 @@ import {
   Timer,
   Download 
 } from '@element-plus/icons-vue';
+import { ElLoading } from 'element-plus';
 
 export default defineComponent({
   name: 'TaskManagement',
@@ -141,6 +143,7 @@ export default defineComponent({
   },
   setup() {
     const taskData = ref([]);
+    const isLoading = ref(false);
     const userJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTI4OTE4NzF9.6OFjQ62TRDJbW4fdGvuhm3lKazws_iUUGrVKInPDMt8';
 
     // 计算统计数据
@@ -156,7 +159,7 @@ export default defineComponent({
       switch (status) {
         case 1: return 'warning';
         case 2: return 'success';
-        default: return 'info';
+        default: return 'warning';
       }
     };
 
@@ -164,7 +167,7 @@ export default defineComponent({
       switch (status) {
         case 2: return '进行中';
         case 1: return '已完成';
-        default: return '未知状态';
+        default: return '进行中';
       }
     };
 
@@ -181,7 +184,7 @@ export default defineComponent({
 
     const inquire = async () => {
       try {
-        const response = await axios.get('http://10.110.147.246:5004/evaluation/task/query', {
+        const response = await axios.get('/vcis11/evaluation/task/query', {
           params: { userJwt }
         });
         if (response.data.code === 0) {
@@ -192,6 +195,17 @@ export default defineComponent({
       }
     };
 
+    // 处理刷新的方法
+    const handleRefresh = async () => {
+      isLoading.value = true;
+      await inquire();
+      
+      // 确保加载动画至少显示500ms
+      setTimeout(() => {
+        isLoading.value = false;
+      }, 500);
+    };
+
     onMounted(() => {
       inquire();
     });
@@ -200,7 +214,8 @@ export default defineComponent({
       taskData,
       runningTasks,
       completedTasks,
-      inquire,
+      isLoading,
+      handleRefresh,
       getStatusType,
       getStatusText,
       formatTime,
@@ -216,6 +231,7 @@ export default defineComponent({
 });
 </script>
 
+
 <style scoped>
 .task-management {
   min-height: 100vh;
@@ -224,6 +240,50 @@ export default defineComponent({
   width: 1560px;
 }
 
+.title-line {
+  height: 4px;
+  width: 200px;
+  background: linear-gradient(90deg, #409eff, #58aaed);
+  margin-top: 12px;
+  border-radius: 2px;
+}
+
+/* 修改刷新按钮样式 */
+.refresh-button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+:deep(.el-button--primary) {
+  background: linear-gradient(45deg, #409eff, #70b0db);
+  border: none;
+}
+
+:deep(.el-button--primary:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+}
+
+/* 添加加载时的样式 */
+:deep(.el-button.is-loading) {
+  background: linear-gradient(45deg, #409eff, #70b0db) !important;
+  opacity: 0.8;
+}
+/* 自定义加载样式 */
+:deep(.el-loading-mask) {
+  z-index: 9999;
+}
+
+:deep(.el-loading-spinner .el-loading-text) {
+  color: #409eff;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+:deep(.el-loading-spinner .path) {
+  stroke: #409eff;
+}
 .page-header {
   margin-bottom: 40px;
 }
@@ -385,7 +445,7 @@ export default defineComponent({
 }
 
 :deep(.el-button--primary) {
-  background: linear-gradient(45deg, #409eff, #67c23a);
+  background: linear-gradient(45deg, #409eff, #70b0db);
   border: none;
 }
 

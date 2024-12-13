@@ -36,7 +36,7 @@
           <h1 class="platform-title">大模型测试平台</h1>
           <h2 class="page-title">{{ currentPageTitle }}</h2>
         </div>
-        <div class="user-info">
+        <!--<div class="user-info">
           <el-dropdown>
             <div class="user-dropdown-link">
               <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
@@ -51,7 +51,7 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-        </div>
+        </div>-->
       </el-header>
       
       <el-main class="main-content">

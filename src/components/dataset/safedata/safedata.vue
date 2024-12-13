@@ -15,7 +15,6 @@
         <el-divider class="divider-style" />
       </el-col>
     </el-row>
-
     <!-- 数据集卡片展示 -->
     <el-row :gutter="24">
       <el-col 
@@ -244,7 +243,7 @@ const handleClick = (dataset: Dataset) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 0;
+  padding: 5px 0;
 }
 
 .main-title {
@@ -253,7 +252,7 @@ const handleClick = (dataset: Dataset) => {
   color: #1a1a1a;
   margin: 0;
   letter-spacing: -0.5px;
-  background: linear-gradient(45deg, #2c3e50, #3498db);
+  background: linear-gradient(45deg, #3577b9, #035be9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -277,8 +276,8 @@ const handleClick = (dataset: Dataset) => {
 }
 
 .divider-style {
-  margin: 24px 0;
-  border-top: 2px solid #eaeaea;
+  margin: 10px 0;
+  border-top: 2px solid #858484;
 }
 
 .dataset-card {
@@ -334,7 +333,7 @@ const handleClick = (dataset: Dataset) => {
 
 /* Dialog Styles */
 .dataset-dialog :deep(.el-dialog__header) {
-  padding: 24px 32px;
+  padding: 20px 25px;
   border-bottom: 1px solid #eaeaea;
 }
 

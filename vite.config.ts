@@ -26,15 +26,15 @@ export default defineConfig({
                 secure: false, // 是否https接口
                 // 配置后端的地址
                 target:"http://10.110.147.246:5004",
-                // 自动将/api替换成空
+              
                 rewrite: (path) => path.replace(/^\/vcis11/, ''),
             },
-            '/vc':{
+            '/vcis':{
                 changeOrigin: true,
                 secure: false, // 是否https接口
-                // 配置后端的地址
+                // 公网服务连接内网服务器后端（公网）地址
                 target:"http://43.143.213.61:8080",
-                // 自动将/api替换成空
+                // 自动将/vcis替换成空
                 rewrite: (path) => path.replace(/^\/vcis/, ''),
             }
         },

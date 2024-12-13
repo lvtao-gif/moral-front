@@ -41,79 +41,107 @@
 
     <!-- 系统数据集选择对话框 -->
     <el-dialog
-      title="选择系统数据集"
-      v-model="systemDialogVisible"
-      width="80%"
-      :close-on-click-modal="false"
-    >
-      <div class="dataset-header">
-        <div class="category-row">
-          <div class="category-cell"></div>
-          <div class="category-cell">一级分类</div>
-          <div class="category-cell">二级分类</div>
-          <div class="category-cell">标准题数</div>
-          <!--<div class="count-cell">高级攻击题数</div>-->
-        </div>
-      </div>
-      <el-form class="dataset-form" :model="datasetParams">
-        <div v-for="(category, categoryIndex) in datasetParams.categories" 
-             :key="categoryIndex" 
-             class="category-section"
-             :class="{ 'alt-background': categoryIndex % 2 === 1 }">
+    title="选择系统数据集"
+    v-model="systemDialogVisible"
+    width="80%"
+    :close-on-click-modal="false"
+    
+  >
+    <el-tabs v-model="activeTab">
+      <el-tab-pane label="安全数据集" name="security">
+        <div class="dataset-header">
           <div class="category-row">
-            <div class="checkbox-cell">
-              <el-checkbox 
-                v-model="category.selected"
-                @change="(val) => handleMainCategoryChange(val, categoryIndex)"
-              ></el-checkbox>
-            </div>
-            <div class="main-category-cell">{{ category.name }}</div>
-            <div class="subcategories-cell">
-              <div v-for="(subcategory, subIndex) in category.subcategories" 
-                   :key="subcategory.name" 
-                   class="subcategory-item">
-                <el-checkbox 
-                  v-model="subcategory.selected"
-                  @change="(val) => handleSubCategoryChange(val, categoryIndex, subIndex)"
-                >
-                  {{ subcategory.name }}
-                </el-checkbox>
-              </div>
-            </div>
-            <div class="count-inputs">
-              <el-input-number 
-                v-model="category.standard_count"
-                :min="0"
-                :max="999"
-                size="small"
-                controls-position="right"
-              />
-            </div>
-            <!--<div class="count-inputs">
-              <el-input-number 
-                v-model="category.advanced_attack_count"
-                :min="0"
-                :max="999"
-                size="small"
-                controls-position="right"
-              />
-            </div>-->
+            <div class="category-cell"></div>
+            <div class="category-cell">一级分类</div>
+            <div class="category-cell">二级分类</div>
+            <div class="category-cell">标准题数</div>
           </div>
         </div>
-      </el-form>
-
-      <div class="total-count">
-        已选择：{{ selectedCount }} / {{ totalCount }} 题目
-      </div>
-
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="systemDialogVisible = false">取 消</el-button>
-          <el-button type="success" @click="openNameDialog">保存数据集</el-button>
-          <!--<el-button type="primary" @click="handleSystemConfirm">确定</el-button>-->
+        <el-form class="dataset-form" :model="datasetParams">
+          <div v-for="(category, categoryIndex) in datasetParams.categories" 
+            :key="categoryIndex" 
+            class="category-section"
+            :class="{ 'alt-background': categoryIndex % 2 === 1 }">
+            <div class="category-row">
+              <div class="checkbox-cell">
+                <el-checkbox 
+                  v-model="category.selected"
+                  @change="(val) => handleMainCategoryChange(val, categoryIndex)"
+                ></el-checkbox>
+              </div>
+              <div class="main-category-cell">{{ category.name }}</div>
+              <div class="subcategories-cell">
+                <div v-for="(subcategory, subIndex) in category.subcategories" 
+                  :key="subcategory.name" 
+                  class="subcategory-item">
+                  <el-checkbox 
+                    v-model="subcategory.selected"
+                    @change="(val) => handleSubCategoryChange(val, categoryIndex, subIndex)"
+                  >
+                    {{ subcategory.name }}
+                  </el-checkbox>
+                </div>
+              </div>
+              <div class="count-inputs">
+                <el-input-number 
+                  v-model="category.standard_count"
+                  :min="0"
+                  :max="999"
+                  size="small"
+                  controls-position="right"
+                />
+              </div>
+            </div>
+          </div>
+        </el-form>
+      </el-tab-pane>
+      
+      <el-tab-pane label="伦理数据集" name="ethics">
+        <div class="dataset-header">
+          <div class="category-row">
+            <div class="category-cell"></div>
+            <div class="category-cell">分类名称</div>
+            <div class="category-cell">描述</div>
+            <div class="category-cell">标准题数</div>
+          </div>
         </div>
-      </template>
-    </el-dialog>
+        <el-form class="dataset-form">
+          <div v-for="(item, index) in ethicsDataset" 
+               :key="index" 
+               class="category-section"
+               :class="{ 'alt-background': index % 2 === 1 }">
+            <div class="category-row">
+              <div class="checkbox-cell">
+                <el-checkbox v-model="item.selected"></el-checkbox>
+              </div>
+              <div class="main-category-cell">{{ item.name }}</div>
+              <div class="description-cell">{{ item.description }}</div>
+              <div class="count-inputs">
+                <el-input-number 
+                  v-model="item.standard_count"
+                  :min="0"
+                  :max="999"
+                  size="small"
+                  controls-position="right"
+                />
+              </div>
+            </div>
+          </div>
+        </el-form>
+      </el-tab-pane>
+    </el-tabs>
+
+    <div class="total-count">
+      已选择：{{ selectedCount }} / {{ totalCount }} 题目
+    </div>
+
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="systemDialogVisible = false">取 消</el-button>
+        <el-button type="success" @click="openNameDialog">保存数据集</el-button>
+      </div>
+    </template>
+  </el-dialog>
 
     <!-- 保存数据集对话框 -->
     <el-dialog
@@ -132,27 +160,27 @@
 
     <!-- 上传数据集对话框 -->
     <el-dialog
-  title="上传数据集"
-  v-model="uploadDialogVisible"
-  width="700px"
-  center
-  destroy-on-close
-  :close-on-click-modal="false"
-  class="upload-dialog"
->
-  <div class="upload-container">
-    <el-upload
-      class="upload-demo"
-      drag
-      action="http://10.110.147.246:5004/upload-dataset"
-      :headers="uploadHeaders"
-      :on-success="handleUploadSuccess"
-      :on-error="handleUploadError"
-      :before-upload="beforeUpload"
-      :limit="1"
-      accept=".csv,.xlsx,.json"
+      title="上传数据集"
+      v-model="uploadDialogVisible"
+      width="700px"
+      center
+      destroy-on-close
+      :close-on-click-modal="false"
+      class="upload-dialog"
     >
-      <template #trigger>
+      <div class="upload-container">
+        <el-upload
+          class="upload-demo"
+          drag
+          action="/vcis/upload-dataset"
+          :headers="uploadHeaders"
+          :on-success="handleUploadSuccess"
+          :on-error="handleUploadError"
+          :before-upload="beforeUpload"
+          :limit="1"
+          accept=".csv,.xlsx,.json"
+        >
+          <template #trigger>
         <div class="upload-trigger">
           <el-icon class="upload-icon"><upload-filled /></el-icon>
           <div class="upload-text">
@@ -211,7 +239,8 @@ export default defineComponent({
     const uploadDialogVisible = ref(false);
     const datasetName = ref('');
     const userJwt = ref('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTI4OTE4NzF9.6OFjQ62TRDJbW4fdGvuhm3lKazws_iUUGrVKInPDMt8');
-
+    type TabType = 'security' | 'ethics';
+    const activeTab = ref<TabType>('security');
     const uploadForm = ref({
       file: null as File | null,
     });
@@ -301,6 +330,99 @@ export default defineComponent({
         }
       ]
     });
+    
+const ethicsDataset = ref([
+  {
+    name: "政治伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "涉及政治决策、权力运行等方面的伦理问题"
+  },
+  {
+    name: "经济伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "经济活动中的道德规范和价值判断"
+  },
+  {
+    name: "社会伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "社会关系和社会行为中的伦理准则"
+  },
+  {
+    name: "文化伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "文化传播和文化交流中的伦理问题"
+  },
+  {
+    name: "科技伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "科技发展和应用中的伦理考量"
+  },
+  {
+    name: "环境伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "环境保护和可持续发展相关伦理"
+  },
+  {
+    name: "医疗伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "医疗实践中的道德准则和价值取向"
+  },
+  {
+    name: "教育伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "教育过程中的道德规范和价值观"
+  },
+  {
+    name: "职业道德数据集",
+    selected: false,
+    standard_count: 0,
+    description: "各类职业中的道德准则和行为规范"
+  },
+  {
+    name: "艺术伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "艺术创作和传播中的伦理问题"
+  },
+  {
+    name: "网络与信息伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "网络空间和信息传播中的伦理规范"
+  },
+  {
+    name: "国际关系伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "国际交往中的道德准则和价值观"
+  },
+  {
+    name: "心理伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "心理服务和研究中的伦理规范"
+  },
+  {
+    name: "生物伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "生命科学研究和应用中的伦理准则"
+  },
+  {
+    name: "运动伦理数据集",
+    selected: false,
+    standard_count: 0,
+    description: "体育运动中的道德规范和价值观"
+  }
+]);
 
     // 打开上传对话框
     const openUploadDialog = () => {
@@ -332,6 +454,8 @@ export default defineComponent({
     // 打开系统数据集对话框
     const openSystemDialog = () => {
       systemDialogVisible.value = true;
+      activeTab.value = 'security';
+      console.log(activeTab.value);
     };
 
     // 处理系统数据集确认
@@ -343,11 +467,17 @@ export default defineComponent({
       systemDialogVisible.value = false;
       router.push('/test/task');
     };
-    const selectedCount = computed(() => {
-      return datasetParams.value.categories.reduce((total, category) => {
-        return total + (category.standard_count || 0) + (category.advanced_attack_count || 0);
-      }, 0);
-    });
+  const selectedCount = computed(() => {
+  if (activeTab.value === 'security') {
+    return datasetParams.value.categories.reduce((total, category) => {
+      return total + (category.standard_count || 0);
+    }, 0);
+  } else {
+    return ethicsDataset.value.reduce((total, item) => {
+      return total + (item.standard_count || 0);
+    }, 0);
+  }
+});
 
     const totalCount = computed(() => 400);
 
@@ -355,27 +485,44 @@ export default defineComponent({
       dialogVisible.value = true;
     };
 
-    const saveDatasetConfig = async () => {
-      if (!datasetName.value) {
-        ElMessage.error('请输入数据集名称');
-        return;
-      }
+  const saveDatasetConfig = async () => {
+  if (!datasetName.value) {
+    ElMessage.error('请输入数据集名称');
+    return;
+  }
 
-      try {
-        const requestData = {
-          datasetName: datasetName.value,
-          userJwt: userJwt.value,
-          datasetParams: datasetParams.value
-        };
-        const response = await axios.post('http://10.110.147.246:5004/generate-dataset/add', requestData);
-        ElMessage.success('数据集保存成功');
-        dialogVisible.value = false;
-      } catch (error) {
-        console.error('Error:', error);
-        ElMessage.error('保存失败，请重试');
-      }
-    };
-    // 处理一级分类勾选变化
+  try {
+    let requestData;
+    
+    // 根据当前激活的标签页构建不同的请求数据
+    if (activeTab.value === 'security') {
+      requestData = {
+        datasetName: datasetName.value,
+        userJwt: userJwt.value,
+        datasetType: 'security',
+        datasetParams: {
+          categories: datasetParams.value.categories
+        }
+      };
+    } else {
+      requestData = {
+        datasetName: datasetName.value,
+        userJwt: userJwt.value,
+        datasetType: 'ethics',
+        datasetParams: {
+          categories: ethicsDataset.value  // 直接使用伦理数据集的数据
+        }
+      };
+    }
+
+    const response = await axios.post('/vcis11/generate-dataset/add', requestData);
+    ElMessage.success('数据集保存成功');
+    dialogVisible.value = false;
+    systemDialogVisible.value = false; // 关闭主对话框
+  } catch (error) {
+    console.error('Error:', error);
+    ElMessage.error('保存失败，请重试');
+  }};   // 处理一级分类勾选变化
     const handleMainCategoryChange = (checked: boolean, categoryIndex: number) => {
       const category = datasetParams.value.categories[categoryIndex];
       // 设置所有子分类的选中状态
@@ -435,7 +582,7 @@ export default defineComponent({
 
       try {
         const response = await axios.post(
-          'http://10.110.147.246:5004/upload-dataset',
+          '/vcis11/upload-dataset',
           formData,
           {
             headers: {
@@ -476,6 +623,8 @@ export default defineComponent({
       datasetParams,
       selectedCount,
       totalCount,
+      ethicsDataset,
+      activeTab,
       openSystemDialog,
       downloadTemplate,
       handleSystemConfirm,
@@ -632,6 +781,13 @@ export default defineComponent({
     background-color: #f5f7fa;
   }
 }
+.description-cell {
+  padding: 0 10px;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 
 .total-count {
   margin: 20px 0;
@@ -645,6 +801,103 @@ export default defineComponent({
   justify-content: flex-end;
   gap: 12px;
   padding-top: 20px;
+}
+
+.dataset-tabs {
+  margin: -20px -20px 0;
+}
+
+.dataset-tabs :deep(.el-tabs__content) {
+  padding: 20px;
+}
+
+.category-description {
+  color: #666;
+  font-size: 14px;
+  padding: 0 10px;
+}
+
+.dataset-tabs {
+  margin: -20px -20px 0;
+}
+
+.dataset-tabs :deep(.el-tabs__content) {
+  padding: 20px;
+}
+
+.dataset-container {
+  padding: 40px;
+  background-color: #fff;
+  min-height: 100vh;
+}
+
+.category-section {
+  margin-bottom: 12px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.category-row {
+  display: grid;
+  grid-template-columns: 60px 200px 1fr 150px 150px;
+  align-items: start;
+  padding: 12px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.subcategories-cell {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  padding: 4px;
+}
+
+.checkbox-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-category-cell {
+  font-weight: bold;
+  color: #303133;
+}
+
+.alt-background {
+  background-color: var(--el-fill-color-light);
+}
+
+.count-inputs {
+  text-align: center;
+}
+
+.total-count {
+  margin: 20px 0;
+  text-align: right;
+  color: #606266;
+  font-size: 14px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 20px;
+}
+
+/* Element Plus 组件深度选择器样式 */
+:deep(.el-input-number) {
+  width: 120px;
+}
+
+:deep(.el-checkbox) {
+  margin-right: 0;
+  margin-bottom: 8px;
+}
+
+:deep(.el-dialog__body) {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 /* Element Plus 组件深度选择器样式 */

@@ -47,7 +47,7 @@ const router = createRouter({
                 },
                 {
                     path: '/dataset_detail/cultural_ethics_dataset/',
-                    name: 'economic_ethics_dataset',
+                    name: 'cultural_ethics_dataset',
                     component: () => import('@/components/dataset/cultural_ethics_dataset.vue'),
                     props: true,
                 },
@@ -101,7 +101,7 @@ const router = createRouter({
                 },
                 {
                     path: '/dataset_detail/education_ethics_dataset/',
-                    name: 'medical_ethics_dataset',
+                    name: 'education_ethics_dataset',
                     component: () => import('@/components/dataset/education_ethics_dataset.vue'),
                     props: true,
                 },
@@ -113,7 +113,7 @@ const router = createRouter({
                 },
                 {
                     path: '/dataset_detail/professional_ethics_dataset/',
-                    name: 'bioethics_dataset',
+                    name: 'professional_ethics_dataset',
                     component: () => import('@/components/dataset/professional_ethics_dataset.vue'),
                     props: true,
                 },
@@ -162,7 +162,7 @@ const router = createRouter({
                 {
                     path: '/evarank',
                     name: 'evaluation_rank',
-                    component: () => import('@/components/rank/rank_3.vue')
+                    component: () => import('@/components/rank/Rank_3.vue')
                 },
                 {
                     path: '/evarank2',

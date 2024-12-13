@@ -244,7 +244,7 @@ export default defineComponent({
     const fetchData = async () => {
       loading.value = true;
       try {
-        const response = await axios.get('http://10.110.147.246:5004/evaluation/choose', {
+        const response = await axios.get('/vcis11/evaluation/choose', {
           params: {
             userJwt: userJwt
           }
@@ -310,7 +310,7 @@ export default defineComponent({
       };
 
       try {
-        const response = await axios.post('http://10.110.147.246:5004/evaluation/task/add', taskData);
+        const response = await axios.post('/vcis11/evaluation/task/add', taskData);
         if (response.data.status==0) {
           ElMessage({
                 message: '任务发布成功',
@@ -336,7 +336,7 @@ export default defineComponent({
     const deleteDataset = async (index: number, list: Dataset[]) => {
       const datasetId = list[index].id;
       try {
-        const response = await axios.post('http://10.110.147.246:5004/generate-dataset/delete', {
+        const response = await axios.post('/vcis11/generate-dataset/delete', {
           datasetId: datasetId,
           userJwt: userJwt
         });
@@ -359,7 +359,7 @@ export default defineComponent({
 
     const queryDataset = async (row: Dataset) => {
       try {
-        const response = await axios.get('http://10.110.147.246:5004/generate-dataset/query', {
+        const response = await axios.get('/vcis11/generate-dataset/query', {
           params: {
             userJwt: userJwt
           }
@@ -380,7 +380,7 @@ export default defineComponent({
     const deleteModel = async (index: number, list: Model[]) => {
       const modelId = list[index].id;
       try {
-        const response = await axios.post('http://10.110.147.246:5004/model/delete', {
+        const response = await axios.post('/vcis11/model/delete', {
           modelId: modelId,
           userJwt: userJwt
         });
@@ -403,7 +403,7 @@ export default defineComponent({
 
     const queryModel = async (row: Model) => {
       try {
-        const response = await axios.get('http://10.110.147.246:5004/model/query', {
+        const response = await axios.get('/vcis11/model/query', {
           params: {
             userJwt: userJwt
           }
@@ -481,8 +481,8 @@ export default defineComponent({
 
 .title-line {
   height: 4px;
-  width: 60px;
-  background: linear-gradient(90deg, #409eff, #67c23a);
+  width: 120px;
+  background: linear-gradient(90deg,#409eff, #58aaed);
   margin-top: 12px;
   border-radius: 2px;
 }
@@ -563,7 +563,10 @@ export default defineComponent({
   padding: 12px 24px;
   font-size: 16px;
 }
-
+:deep(.el-button--primary) {
+  background-color: #409eff;
+  border-color: #409eff;
+}
 .custom-dialog {
   border-radius: 12px;
   overflow: hidden;
